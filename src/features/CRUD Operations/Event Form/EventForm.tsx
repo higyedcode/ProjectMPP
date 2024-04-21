@@ -15,14 +15,21 @@ function setFormEntriesForEvent(
     formEntries: FormEntryType[],
     event: Event | undefined,
 ) {
+   
     if (event !== undefined) {
+        // console.log("NOT UNDEFINED")
+        // console.log("SETTIING IT: " + event!.eventDate.getFullYear() ) 
         formEntries[0].disabled = true
-        formEntries[0].defaultValue = event.eventId.toString()
-        formEntries[1].defaultValue = event.eventName
-        formEntries[2].defaultValue = event.eventDate
-            .toISOString()
-            .split('T')[0]
-        formEntries[3].defaultValue = event.eventLocation
+        formEntries[0].defaultValue = event!.eventId
+        formEntries[1].defaultValue = event!.eventName
+        // formEntries[2].defaultValue = event!.eventDate
+        //     .toISOString()
+        //     .split('T')[0]
+        formEntries[2].defaultValue = event!.eventDate.getFullYear() + "-" + (event!.eventDate.getMonth() + 1).toString().padStart(2,"0") + "-" + event!.eventDate.getDate().toString().padStart(2,"0") ;
+        formEntries[3].defaultValue = event!.eventLocation
+       
+        
+
     }
     return formEntries
 }
@@ -34,7 +41,7 @@ function createFormEntries(props: EventFormType) {
             ref: props.idInput,
             placeHolder: 'ID',
             defaultValue: '',
-            disabled: false,
+            disabled: true,
         },
         {
             label: 'Name',
@@ -65,6 +72,7 @@ function createFormEntries(props: EventFormType) {
 
 export function EventForm(props: EventFormType) {
     const formEntries = createFormEntries(props)
+    // console.log("HEREEEE");
 
     return (
         <div className='form-div' data-testid='event-form'>

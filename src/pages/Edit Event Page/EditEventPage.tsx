@@ -1,44 +1,42 @@
-import {useContext, useEffect, useRef} from 'react'
+import {useContext, useEffect, useRef, useState} from 'react'
 import {useNavigate, useParams} from 'react-router-dom'
 import {EventContext} from '../../contexts/EventContext'
 import {EventForm} from '../../features/CRUD Operations/Event Form/EventForm'
 import {Event} from '../../models/Event'
+import {
+    getEventById,
+    updateEvent,
+} from '../../services/EventService/EventService'
 import {Button} from '../../shared/components/button/button'
 import {Layout} from '../../shared/components/layout/Layout'
+import LoadingPage from '../Loading Page/LoadingPage'
 import './EditEventPage.css'
-import { sha256 } from 'js-sha256'
 
 function handleOnClick(
-    idInput: React.RefObject<HTMLInputElement>,
+    event: Event,
     nameInput: React.RefObject<HTMLInputElement>,
     dateInput: React.RefObject<HTMLInputElement>,
     locationInput: React.RefObject<HTMLInputElement>,
 ) {
-    if (
-        !idInput.current ||
-        !nameInput.current ||
-        !dateInput.current ||
-        !locationInput.current
-    )
+    if (!nameInput.current || !dateInput.current || !locationInput.current)
         throw new Error('Input references are null!')
 
     if (
-        !idInput.current!.value ||
         !nameInput.current!.value ||
         !dateInput.current!.value ||
         !locationInput.current!.value
     )
         throw new Error('Empty fields detected!')
 
-    const eventId: number = parseInt(idInput.current.value),
+    const eventId: string = event.eventId.toString(),
         eventName: string = nameInput.current.value,
-        eventDate: Date = new Date(dateInput.current.value),
-        location: string = nameInput.current.value
+        eventDate: string = dateInput.current.value,
+        eventLocation: string = locationInput.current.value
 
-    return new Event(eventId, eventName, eventDate, location)
+    return {eventId, eventName, eventDate, eventLocation}
 }
 
-export function EditEventPage() {
+export default function EditEventPage() {
     document.title = 'Edit Event'
 
     const idInput = useRef<HTMLInputElement>(null)
@@ -50,39 +48,53 @@ export function EditEventPage() {
     const eventsContext = useContext(EventContext)!
 
     //parameters from the URL
+
     const {id} = useParams()
-    console.log(useParams())
-    
-
-    const event = eventsContext.events.find(
-        (event: Event) => sha256(event.eventId.toString()) === id,
+    console.log(id)
+    let [selectedEvent, setSelectedEvent] = useState<Event>(
+        new Event(0, '', new Date(), ''),
     )
+    let [isLoading, setIsLoading] = useState<boolean>(true)
 
-    if (!event) {
-        useEffect(() => {console.log('NO EVENT FOUND')
-        navigate('/')
-        return
-    })
-        
-    }
+    useEffect(() => {
+        getEventById(parseInt(id!))
+            .then((foundEvent: Event) => {
+                console.log('FOUND: ' + foundEvent.toString())
+                setSelectedEvent(foundEvent)
+                setIsLoading(false)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }, [id])
+
+    useEffect(() => {
+        console.log('CHANGED EVENT: ' + selectedEvent!.toString())
+        if (isLoading) return
+        if (!selectedEvent) navigate('/')
+    }, [selectedEvent])
 
     const handleOnClickWrapper = () => {
         try {
             const newEvent = handleOnClick(
-                idInput,
+                selectedEvent!,
                 nameInput,
                 dateInput,
                 locationInput,
             )
-            eventsContext.removeEvent(newEvent.eventId)
-            eventsContext.addEvent(newEvent)
+            // eventsContext.removeEvent(newEvent.eventId)
+            // eventsContext.addEvent(newEvent)
 
-            navigate('/')
+            updateEvent(selectedEvent.eventId, newEvent).then(() => {
+                navigate('/events')
+            })
+
+            navigate('/events')
         } catch (error) {
             alert(error)
         }
     }
-
+    if (isLoading) return <LoadingPage />
 
     return (
         <Layout>
@@ -95,13 +107,13 @@ export function EditEventPage() {
                     nameInput={nameInput}
                     dateInput={dateInput}
                     locationInput={locationInput}
-                    event={event}
+                    event={selectedEvent}
                     data-testid='event-form'
                 />
 
                 <Button
                     type='submit'
-                    buttonMessage='Edit user'
+                    buttonMessage='Edit event'
                     onclick={handleOnClickWrapper}
                 />
             </div>

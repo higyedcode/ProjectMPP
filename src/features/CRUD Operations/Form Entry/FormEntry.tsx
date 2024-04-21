@@ -10,12 +10,15 @@ import './FormEntry.css'
 // }
 
 const FormEntry = forwardRef<HTMLInputElement, FormEntryProps>((props, ref) => {
+//    console.log("DEFAULT" + props.defaultValue)
+    
     return (
         <div className='form-entry' data-testid='form-entry'>
             <label htmlFor={props.label} className='form-label'>
                 {props.label}
             </label>
-            {props.defaultValue === '' ? (
+            {
+            props.defaultValue === '' ? (
                 <input
                     data-testid='form-entry-input'
                     // type={props.label === 'Date' ? 'date':'text'}

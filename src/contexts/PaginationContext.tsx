@@ -1,14 +1,16 @@
 import {createContext} from 'react'
-import {EventContextType, ProviderType} from '../types/EventContextTypes.types'
+import { PaginationContextType, PaginationContextProviderType } from '../types/PaginationContextProps.types'
 
-export const EventContext = createContext<EventContextType | null>(null)
 
-function EventContextProvider({eventContext, children}: ProviderType) {
+
+export const PaginationContext = createContext<PaginationContextType | null>(null)
+
+function PaginationContextProvider({paginationContext, children}: PaginationContextProviderType) {
     return (
-        <EventContext.Provider value={eventContext}>
+        <PaginationContext.Provider value={paginationContext}>
             {children}
-        </EventContext.Provider>
+        </PaginationContext.Provider>
     )
 }
 
-export {EventContextProvider}
+export {PaginationContextProvider }
