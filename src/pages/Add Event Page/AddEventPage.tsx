@@ -6,30 +6,30 @@ import {Event} from '../../models/Event'
 import {Button} from '../../shared/components/button/button'
 import {Layout} from '../../shared/components/layout/Layout'
 import './AddEventPage.css'
+import { addEvent } from '../../services/EventService/EventService'
+import { EventJson } from '../../types/eventJson.types'
 
 function handleOnClick(
     idInput: React.RefObject<HTMLInputElement>,
     nameInput: React.RefObject<HTMLInputElement>,
     dateInput: React.RefObject<HTMLInputElement>,
     locationInput: React.RefObject<HTMLInputElement>,
-): Event {
+): EventJson {
     if (
-        !idInput.current!.value ||
         !nameInput.current!.value ||
         !dateInput.current!.value ||
         !locationInput.current!.value
     )
         throw new Error('Empty fields detected!')
 
-    const eventId: number = parseInt(idInput.current!.value),
-        eventName: string = nameInput.current!.value,
-        eventDate: Date = new Date(dateInput.current!.value),
-        location: string = nameInput.current!.value
+    const eventName: string = nameInput.current!.value,
+        eventDate: string = dateInput.current!.value,
+        eventLocation: string = locationInput.current!.value
 
-    return new Event(eventId, eventName, eventDate, location)
+    return { eventName, eventDate, eventLocation };
 }
 
-export function AddEventPage() {
+export default function AddEventPage() {
     document.title = 'Add Event'
 
     const idInput = useRef<HTMLInputElement>(null)
@@ -40,6 +40,8 @@ export function AddEventPage() {
     const navigate = useNavigate()
     const eventsContext = useContext(EventContext)!
 
+    
+
     const handleOnClickWrapper = () => {
         try {
             const inputEvent = handleOnClick(
@@ -48,7 +50,11 @@ export function AddEventPage() {
                 dateInput,
                 locationInput,
             )
-            eventsContext.addEvent(inputEvent)
+            
+            
+            addEvent(inputEvent).then(
+                () => navigate('/')
+            );
             navigate('/')
         } catch (error) {
             alert(error)

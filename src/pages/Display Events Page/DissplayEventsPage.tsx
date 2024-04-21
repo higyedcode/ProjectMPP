@@ -1,38 +1,148 @@
 import {useContext, useEffect, useState} from 'react'
 
-import {EventContext} from '../../contexts/EventContext'
 import {EventCard} from '../../features/Display Events/EventCard'
 import {Event} from '../../models/Event'
 import {Layout} from '../../shared/components/layout/Layout'
 
+import {EventContext} from '../../contexts/EventContext'
+import {PaginationContext} from '../../contexts/PaginationContext'
+import {
+    deleteEvent,
+    getEventsPage,
+    getEventsSizeByHostId,
+} from '../../services/EventService/EventService'
 import './DisplayEventsPage.css'
 
-export function DisplayEventPage() {
+export default function DisplayEventPage() {
     document.title = 'Events Dashboard!'
 
+    const paginationContext = useContext(PaginationContext)!
     const eventsContext = useContext(EventContext)!
+    const hostId = eventsContext.hostId
 
-    let [isAscending, setIsAscending] = useState<String>('ASC')
+    let [isAscending, setIsAscending] = useState<String>(
+        paginationContext.isAscending ? 'ASC' : 'DESC',
+    )
+    let [showNext, setShowNext] = useState<boolean>(true)
+    let [updateFlag, setUpdateFlag] = useState<boolean>(true)
+    let [nrEvents, setNrEvents] = useState<number>(0)
+    // let [usersCount, setUsersCount] = useState<number>(0);
 
-    useEffect(() => {
-        events.sort((firstEvent, secondEvent) => {
-            return (
-                firstEvent.eventDate.getTime() - secondEvent.eventDate.getTime()
-            )
+    let [currentPage, setCurrentPage] = useState<number>(1)
+    let [currentEvents, setCurrentEvents] = useState<Event[]>([])
+
+    // let [scrollPosition, setScrollPosition] = useState<number>(0);
+
+    // let [isOnline, setIsOnline] = useState<boolean>(navigator.onLine)
+    // let [isServerOnline, setIsServerOnline] = useState<boolean>(true)
+
+    // useEffect(() => {
+    //     events.sort((firstEvent, secondEvent) => {
+    //         return (
+    //             firstEvent.eventDate.getTime() - secondEvent.eventDate.getTime()
+    //         )
+    //     })
+    //     if (isAscending === 'DESC') events.reverse()
+    // }, [isAscending])
+
+    // let events: Event[] = eventsContext.events
+    const removeMethod = (id: number) => {
+        deleteEvent(id!).then(() => {
+            console.log('DELETE ' + id)
+            getEventsPage(
+                hostId,
+                currentPage - 1,
+                isAscending == 'ASC' ? true : false,
+            ).then((events) => {
+                setCurrentEvents(events)
+                setUpdateFlag(!updateFlag)
+                setShowNext(true)
+            })
         })
-        if (isAscending === 'DESC') events.reverse()
-    }, [isAscending])
+    }
 
-    let events: Event[] = eventsContext.events
-    const removeMethod = eventsContext.removeEvent
+    // const nrAddElems = 5
+    // const [itemsPerPage, setItemsPerPage] = useState(5)
+    // const currentEvents = events.slice(0, itemsPerPage)
 
-    const nrAddElems = 5
-    const [itemsPerPage, setItemsPerPage] = useState(5)
-    const currentEvents = events.slice(0, itemsPerPage)
+    // useEffect(() => {
+    //     const currentEvents = events.slice(0, itemsPerPage)
+    // }, [itemsPerPage])
+
+    ////////////////////////////
+    const handleShowMore = () => {
+        console.log(hostId)
+        console.log(currentPage - 1)
+        getEventsPage(
+            hostId,
+            currentPage,
+            isAscending == 'ASC' ? true : false,
+        ).then((nextPage) => {
+            setCurrentEvents([...currentEvents, ...nextPage])
+            if ((currentPage + 1) * 3 - nrEvents < 3) {
+                setCurrentPage(currentPage + 1)
+                paginationContext.setCurrentPageId(currentPage + 1)
+                setShowNext(true)
+            }
+        })
+    }
+    useEffect(() => {
+        console.log('isAscending/updateFlag changed')
+        getEventsPage(
+            hostId,
+            0,
+            isAscending == 'ASC' ? true : false,
+            currentPage * 3,
+        ).then((events) => {
+            setCurrentEvents(events)
+            setShowNext(true)
+        })
+        getEventsSizeByHostId(hostId).then((size) => {
+            console.log('NR EVENTS ' + size)
+            setNrEvents(size)
+        })
+    }, [isAscending, updateFlag])
+
+    // useEffect(() => {
+    //     console.log('currentPage changed')
+    //     const socket = new WebSocket('ws://localhost:8080/websocket')
+    //     const stompClient = Stomp.over(socket)
+
+    //     // socket.onopen = () => {
+    //     //     console.log("CONNECTION RECEIVED");
+    //     // }
+    //     // socket.onerror = (error) => {
+    //     //     console.log("ERROR " + error);
+    //     // }
+    //     //subscribe to '/topic/events' endpoint
+    //     stompClient.connect({}, () => {
+    //         console.log('CONNECTED')
+    //         stompClient.subscribe('/topic/events', (response) => {
+    //             const newMessage = response.body
+    //             console.log('MESSAGE received: ' + newMessage)
+
+    //             setUpdateFlag(!updateFlag)
+    //         })
+    //         console.log('AFTER ' + hostId)
+    //     })
+    // }, [currentPage])
 
     useEffect(() => {
-        const currentEvents = events.slice(0, itemsPerPage)
-    }, [itemsPerPage])
+        currentPage = 1
+
+        getEventsPage(hostId, 0, isAscending == 'ASC' ? true : false, 3)
+            .then((loadedPage) => {
+                setCurrentEvents(loadedPage)
+                console.log('LOADED ' + loadedPage)
+            })
+            .catch((error) => {
+                console.log('eroare')
+                console.log(error)
+            })
+    }, [])
+
+    // console.log(currentEvents)
+    ////////////////////////////
 
     return (
         <Layout>
@@ -55,12 +165,16 @@ export function DisplayEventPage() {
                         />
                     ))}
                 </div>
-                <button
-                    onClick={() => setItemsPerPage(itemsPerPage + nrAddElems)}
-                >
-                    {' '}
-                    Show More
-                </button>
+                {Math.min(currentPage * 3, nrEvents) != nrEvents && (
+                    <button
+                        className='showMoreBtn'
+                        onClick={() => handleShowMore()}
+                    >
+                        {' '}
+                        View More {Math.min(currentPage * 3, nrEvents)} /{' '}
+                        {nrEvents}
+                    </button>
+                )}
             </div>
         </Layout>
     )

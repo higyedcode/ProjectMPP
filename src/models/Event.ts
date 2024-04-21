@@ -18,6 +18,15 @@ export class Event {
         this._eventLocation = eventLocation
     }
 
+    public static fromJson(json: any): Event {
+        return new Event(
+            json.id,
+            json.eventName,
+            new Date(json.eventDate),
+            json.eventLocation,
+        )
+    }
+
     // Getters
     public get eventId(): number {
         return this._eventId
@@ -50,5 +59,9 @@ export class Event {
 
     public set eventLocation(eventLocation: string) {
         this._eventLocation = eventLocation
+    }
+    public toString(): string {
+        // Customize the string representation as needed
+        return `EventID:${this.eventId} Name: ${this.eventName}, Date: ${this.eventDate}, Location: ${this.eventLocation}`
     }
 }

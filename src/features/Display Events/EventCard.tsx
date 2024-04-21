@@ -8,7 +8,8 @@ export function EventCard({givenEvent, removeMethod}: EventCardProps) {
     const navigate = useNavigate()
 
     const handleCardOnClick = () => {
-        navigate('/editEvent/' + sha256(givenEvent.eventId.toString()))
+        // console.log("GIVEN EVENT: " + givenEvent.toString())
+        navigate('/editEvent/' + givenEvent.eventId)
     }
 
     return (
