@@ -12,14 +12,19 @@ export default function HostCard({givenHost, removeMethod}: HostCardProps) {
     const handleCardOnClick = () => {
         // console.log("GIVEN host: " + givenEvent.toString())
         eventContext.setHostId(givenHost.id)
+
         navigate('/events')
     }
 
+    const handleCardOnDoubleClick = () => {
+        navigate('/editHost/' + givenHost.id)
+    }
     return (
         <div
             className='card'
             data-testid='host-card'
             onClick={handleCardOnClick}
+            onContextMenu={handleCardOnDoubleClick}
         >
             <button
                 className='remove-button'

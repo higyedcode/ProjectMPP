@@ -134,7 +134,7 @@ const ChartPage = () => {
 
     return (
         <div>
-            <Header />
+            <Header entity='Events' />
             <div className='pie-chart-container'>
                 {eventsMap.size > 0 && (
                     <BarChart

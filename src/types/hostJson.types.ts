@@ -3,6 +3,6 @@ export type HostJson = {
     name: string
     email: string
     bio: string
-    org: string
-    link: string
+    organisation: string
+    socialMediaLink: string
 }

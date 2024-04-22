@@ -1,7 +1,7 @@
-import {Event} from '../../../models/Event'
-import {EventFormType} from '../../../types/EventFormProps.types'
+import {Host} from '../../../models/Host'
+import {HostFormType} from '../../../types/HostFormProps.types'
 import {FormEntry} from '../Form Entry/FormEntry'
-import './EventForm.css'
+import './HostForm.css'
 
 type FormEntryType = {
     label: string
@@ -11,31 +11,28 @@ type FormEntryType = {
     disabled: boolean
 }
 
-function setFormEntriesForEvent(
+function setFormEntriesForHost(
     formEntries: FormEntryType[],
-    event: Event | undefined,
+    host: Host | undefined,
 ) {
-    if (event !== undefined) {
+    if (host !== undefined) {
         // console.log("NOT UNDEFINED")
         // console.log("SETTIING IT: " + event!.eventDate.getFullYear() )
         formEntries[0].disabled = true
-        formEntries[0].defaultValue = event!.eventId.toString()
-        formEntries[1].defaultValue = event!.eventName
+        formEntries[0].defaultValue = host!.id.toString()
+        formEntries[1].defaultValue = host!.name
         // formEntries[2].defaultValue = event!.eventDate
         //     .toISOString()
         //     .split('T')[0]
-        formEntries[2].defaultValue =
-            event!.eventDate.getFullYear() +
-            '-' +
-            (event!.eventDate.getMonth() + 1).toString().padStart(2, '0') +
-            '-' +
-            event!.eventDate.getDate().toString().padStart(2, '0')
-        formEntries[3].defaultValue = event!.eventLocation
+        formEntries[2].defaultValue = host!.email
+        formEntries[3].defaultValue = host!.bio
+        formEntries[4].defaultValue = host!.org
+        formEntries[5].defaultValue = host!.link
     }
     return formEntries
 }
 
-function createFormEntries(props: EventFormType) {
+function createFormEntries(props: HostFormType) {
     let formEntries = [
         {
             label: 'ID',
@@ -52,26 +49,40 @@ function createFormEntries(props: EventFormType) {
             disabled: false,
         },
         {
-            label: 'Date',
-            ref: props.dateInput,
-            placeHolder: 'Date',
+            label: 'Email',
+            ref: props.emailInput,
+            placeHolder: 'Email',
             defaultValue: '',
             disabled: false,
         },
         {
-            label: 'Location',
-            ref: props.locationInput,
-            placeHolder: 'Location',
+            label: 'Bio',
+            ref: props.bioInput,
+            placeHolder: 'About you...',
+            defaultValue: '',
+            disabled: false,
+        },
+        {
+            label: 'Organisation',
+            ref: props.orgInput,
+            placeHolder: 'Organisation',
+            defaultValue: '',
+            disabled: false,
+        },
+        {
+            label: 'Link',
+            ref: props.linkInput,
+            placeHolder: 'Social Media Link',
             defaultValue: '',
             disabled: false,
         },
     ]
 
-    formEntries = setFormEntriesForEvent(formEntries, props.event)
+    formEntries = setFormEntriesForHost(formEntries, props.host)
     return formEntries
 }
 
-export function EventForm(props: EventFormType) {
+export function HostForm(props: HostFormType) {
     const formEntries = createFormEntries(props)
     // console.log("HEREEEE");
 

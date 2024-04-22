@@ -2,7 +2,7 @@ import {Link} from 'react-router-dom'
 
 import './Header.css'
 
-const Header = () => {
+const Header = ({entity}) => {
     return (
         <div className='header' data-testid='header-test-id'>
             <nav className='navbar'>
@@ -12,21 +12,29 @@ const Header = () => {
 
                 <div className='links'>
                     <div>
-                        <Link to='/' className='link'>
-                            List Events
+                        <Link
+                            to={entity === 'Events' ? '/events' : '/'}
+                            className='link'
+                        >
+                            List {entity}
                         </Link>
                     </div>
 
                     <div>
-                        <Link to='/addEvent' className='link'>
-                            Add Event
+                        <Link
+                            to={'/add' + entity.slice(0, -1)}
+                            className='link'
+                        >
+                            Add {entity}
                         </Link>
                     </div>
-                    <div>
-                        <Link to='/chart' className='link'>
-                            Show Statistics
-                        </Link>
-                    </div>
+                    {entity == 'Events' && (
+                        <div>
+                            <Link to='/chart' className='link'>
+                                Show Statistics
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </nav>
         </div>

@@ -3,47 +3,53 @@ import {useNavigate} from 'react-router-dom'
 import {EventContext} from '../../contexts/EventContext'
 import {HostContext} from '../../contexts/HostsContext'
 import {OfflineContext} from '../../contexts/OfflineContext'
-import {EventForm} from '../../features/CRUD Operations/Event Form/EventForm'
-import {addEvent} from '../../services/EventService/EventService'
-import {getHostById} from '../../services/HostService/HostService'
+import {HostForm} from '../../features/CRUD Operations/Host Form/HostForm'
+import {addhost} from '../../services/HostService/HostService'
 import {Button} from '../../shared/components/button/button'
 import {Layout} from '../../shared/components/layout/Layout'
-import {EventJson} from '../../types/eventJson.types'
-import './AddEventPage.css'
+import {HostJson} from '../../types/hostJson.types'
+import './AddHostPage.css'
 
 function handleOnClick(
     idInput: React.RefObject<HTMLInputElement>,
     nameInput: React.RefObject<HTMLInputElement>,
-    dateInput: React.RefObject<HTMLInputElement>,
-    locationInput: React.RefObject<HTMLInputElement>,
-    hostId: number,
-): EventJson {
+    emailInput: React.RefObject<HTMLInputElement>,
+    bioInput: React.RefObject<HTMLInputElement>,
+    orgInput: React.RefObject<HTMLInputElement>,
+    linkInput: React.RefObject<HTMLInputElement>,
+): HostJson {
     if (
         !nameInput.current!.value ||
-        !dateInput.current!.value ||
-        !locationInput.current!.value
+        !emailInput.current!.value ||
+        !bioInput.current!.value ||
+        !orgInput.current!.value ||
+        !linkInput.current!.value
     )
         throw new Error('Empty fields detected!')
 
-    const eventName: string = nameInput.current!.value,
-        eventDate: string = dateInput.current!.value,
-        eventLocation: string = locationInput.current!.value,
-        hostID: number = hostId
+    const name: string = nameInput.current!.value,
+        email: string = emailInput.current!.value,
+        bio: string = bioInput.current!.value,
+        org: string = orgInput.current!.value,
+        link: string = linkInput.current!.value
     return {
-        eventName: eventName,
-        eventDate: eventDate,
-        eventLocation: eventLocation,
-        hostId: hostID,
+        name: name,
+        email: email,
+        bio: bio,
+        organisation: org,
+        socialMediaLink: link,
     }
 }
 
-export default function AddEventPage() {
-    document.title = 'Add Event'
+export default function AddHostPage() {
+    document.title = 'Add Host'
 
     const idInput = useRef<HTMLInputElement>(null)
     const nameInput = useRef<HTMLInputElement>(null)
-    const dateInput = useRef<HTMLInputElement>(null)
-    const locationInput = useRef<HTMLInputElement>(null)
+    const emailInput = useRef<HTMLInputElement>(null)
+    const bioInput = useRef<HTMLInputElement>(null)
+    const orgInput = useRef<HTMLInputElement>(null)
+    const linkInput = useRef<HTMLInputElement>(null)
 
     const navigate = useNavigate()
     const eventsContext = useContext(EventContext)!
@@ -52,22 +58,22 @@ export default function AddEventPage() {
 
     const handleOnClickWrapper = () => {
         try {
-            getHostById(
-                eventsContext.hostId.toString(),
+            const inputHost = handleOnClick(
+                idInput,
+                nameInput,
+                emailInput,
+                bioInput,
+                orgInput,
+                linkInput,
+            )
+            console.log(inputHost)
+            addhost(
+                inputHost,
                 !offlineContext.isOnline || !offlineContext.isServerOnline,
                 hostsContext.hosts,
-            ).then((host) => {
-                const inputEvent = handleOnClick(
-                    idInput,
-                    nameInput,
-                    dateInput,
-                    locationInput,
-                    host!.id,
-                )
-                console.log(inputEvent)
-                addEvent(inputEvent).then(() => navigate('/events'))
-                navigate('/events')
-            })
+                offlineContext.offlineDB,
+            ).then(() => navigate('/'))
+            navigate('/')
         } catch (error) {
             alert(error)
         }
@@ -83,11 +89,13 @@ export default function AddEventPage() {
                 >
                     <div className='main-title'>Add event</div>
 
-                    <EventForm
+                    <HostForm
                         idInput={idInput}
                         nameInput={nameInput}
-                        dateInput={dateInput}
-                        locationInput={locationInput}
+                        emailInput={emailInput}
+                        bioInput={bioInput}
+                        orgInput={orgInput}
+                        linkInput={linkInput}
                         data-testid='event-form'
                     />
 
