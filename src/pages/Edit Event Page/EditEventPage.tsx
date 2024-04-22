@@ -17,6 +17,7 @@ function handleOnClick(
     nameInput: React.RefObject<HTMLInputElement>,
     dateInput: React.RefObject<HTMLInputElement>,
     locationInput: React.RefObject<HTMLInputElement>,
+    hostId: number,
 ) {
     if (!nameInput.current || !dateInput.current || !locationInput.current)
         throw new Error('Input references are null!')
@@ -31,9 +32,16 @@ function handleOnClick(
     const eventId: string = event.eventId.toString(),
         eventName: string = nameInput.current.value,
         eventDate: string = dateInput.current.value,
-        eventLocation: string = locationInput.current.value
+        eventLocation: string = locationInput.current.value,
+        hostID: number = hostId
 
-    return {eventId, eventName, eventDate, eventLocation}
+    return {
+        eventId: eventId,
+        eventName: eventName,
+        eventDate: eventDate,
+        eventLocation: eventLocation,
+        hostId: hostID,
+    }
 }
 
 export default function EditEventPage() {
@@ -81,6 +89,7 @@ export default function EditEventPage() {
                 nameInput,
                 dateInput,
                 locationInput,
+                eventsContext.hostId!,
             )
             // eventsContext.removeEvent(newEvent.eventId)
             // eventsContext.addEvent(newEvent)
@@ -97,26 +106,29 @@ export default function EditEventPage() {
     if (isLoading) return <LoadingPage />
 
     return (
-        <Layout>
-            <div
-                className='main-page-container'
-                data-testid='main-page-container'
-            >
-                <EventForm
-                    idInput={idInput}
-                    nameInput={nameInput}
-                    dateInput={dateInput}
-                    locationInput={locationInput}
-                    event={selectedEvent}
-                    data-testid='event-form'
-                />
+        <Layout
+            entity='Events'
+            children={
+                <div
+                    className='main-page-container'
+                    data-testid='main-page-container'
+                >
+                    <EventForm
+                        idInput={idInput}
+                        nameInput={nameInput}
+                        dateInput={dateInput}
+                        locationInput={locationInput}
+                        event={selectedEvent}
+                        data-testid='event-form'
+                    />
 
-                <Button
-                    type='submit'
-                    buttonMessage='Edit event'
-                    onclick={handleOnClickWrapper}
-                />
-            </div>
-        </Layout>
+                    <Button
+                        type='submit'
+                        buttonMessage='Edit event'
+                        onclick={handleOnClickWrapper}
+                    />
+                </div>
+            }
+        ></Layout>
     )
 }

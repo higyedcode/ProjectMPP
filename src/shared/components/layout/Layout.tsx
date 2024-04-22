@@ -2,10 +2,10 @@ import {Footer} from '../footer/Footer'
 import {Header} from '../header/Header'
 import './Layout.css'
 
-export function Layout({children}: any) {
+export function Layout({entity, children}: any) {
     return (
         <div className='layout-container' data-testid='layout-test-id'>
-            <Header />
+            <Header entity={entity} />
 
             {children}
 

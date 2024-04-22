@@ -145,37 +145,44 @@ export default function DisplayEventPage() {
     ////////////////////////////
 
     return (
-        <Layout>
-            <div className='main-page-container'>
-                <button
-                    className='sort'
-                    onClick={() =>
-                        setIsAscending(isAscending === 'ASC' ? 'DESC' : 'ASC')
-                    }
-                >
-                    {isAscending}
-                </button>
-
-                <div className='events-list' data-testid='events-list'>
-                    {currentEvents.map((event) => (
-                        <EventCard
-                            givenEvent={event}
-                            removeMethod={removeMethod}
-                            key={event.eventId}
-                        />
-                    ))}
-                </div>
-                {Math.min(currentPage * 3, nrEvents) != nrEvents && (
+        <Layout
+            entity='Events'
+            children={
+                <div className='main-page-container'>
                     <button
-                        className='showMoreBtn'
-                        onClick={() => handleShowMore()}
+                        className='sort'
+                        onClick={() =>
+                            setIsAscending(
+                                isAscending === 'ASC' ? 'DESC' : 'ASC',
+                            )
+                        }
                     >
-                        {' '}
-                        View More {Math.min(currentPage * 3, nrEvents)} /{' '}
-                        {nrEvents}
+                        {isAscending}
                     </button>
-                )}
-            </div>
-        </Layout>
+
+                    <div className='events-list' data-testid='events-list'>
+                        {currentEvents.map((event) => (
+                            <EventCard
+                                givenEvent={event}
+                                removeMethod={removeMethod}
+                                key={event.eventId}
+                            />
+                        ))}
+                    </div>
+                    {Math.min(currentPage * 3, nrEvents) != nrEvents && (
+                        <button
+                            className='showMoreBtn'
+                            onClick={() => handleShowMore()}
+                        >
+                            {' '}
+                            View More {Math.min(
+                                currentPage * 3,
+                                nrEvents,
+                            )} / {nrEvents}
+                        </button>
+                    )}
+                </div>
+            }
+        ></Layout>
     )
 }

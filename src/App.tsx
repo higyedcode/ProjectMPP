@@ -12,7 +12,9 @@ import {OfflineContextProvider} from './contexts/OfflineContext'
 import {PaginationContextProvider} from './contexts/PaginationContext'
 import {OfflineDatabase} from './features/Offline Support/OfflineDatabase'
 import {Host} from './models/Host'
+import AddHostPage from './pages/Add Host Page/AddHostPage'
 import DisplayHostPage from './pages/Display Hosts Page/DissplayHostsPage'
+import EditHostPage from './pages/Edit Host Page/EditHostPage'
 import LoadingPage from './pages/Loading Page/LoadingPage'
 import WebSocketPage from './pages/WebSocket Page/WebSocketPage'
 import {getEvents} from './services/EventService/EventService'
@@ -183,9 +185,10 @@ function App() {
                 console.error('Error fetching events:', error)
             })
 
-        getHosts()
+        getHosts(true, hosts)
             .then((hostsList) => {
                 setHosts(hostsList)
+                console.log('LOADED\n' + hostsList)
             })
             .catch((error) => {
                 console.log('Error fetching hosts: ' + error)
@@ -228,22 +231,23 @@ function App() {
     }
 
     console.log('ONLINE ' + isServerOnline)
-    if (!isOnline)
-        return (
-            <div className='container'>
-                <div className='offline'>Offline</div>
-            </div>
-        )
-    if (!isServerOnline)
-        return (
-            <div className='container'>
-                <div className='offline'>Server is offline</div>
-            </div>
-        )
+    // if (!isOnline)
+    //     return (
+    //         <div className='container'>
+    //             <div className='offline'>Offline</div>
+    //         </div>
+    //     )
+    // if (!isServerOnline)
+    //     return (
+    //         <div className='container'>
+    //             <div className='offline'>Server is offline</div>
+    //         </div>
+    //     )
 
     return (
         <OfflineContextProvider
             offlineContext={{
+                offlineDB,
                 isOnline,
                 setIsOnline,
                 isServerOnline,
@@ -325,12 +329,32 @@ function App() {
                                         }
                                     />
                                     <Route
+                                        path='/addHost'
+                                        element={
+                                            <Suspense
+                                                fallback={<LoadingPage />}
+                                            >
+                                                <AddHostPage />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
                                         path='/editEvent/:id'
                                         element={
                                             <Suspense
                                                 fallback={<LoadingPage />}
                                             >
                                                 <EditEventPage />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path='/editHost/:id'
+                                        element={
+                                            <Suspense
+                                                fallback={<LoadingPage />}
+                                            >
+                                                <EditHostPage />
                                             </Suspense>
                                         }
                                     />

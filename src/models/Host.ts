@@ -82,8 +82,8 @@ export class Host {
             json.name,
             json.email,
             json.bio,
-            json.org,
-            json.link,
+            json.organisation,
+            json.socialMediaLink,
         )
     }
 }

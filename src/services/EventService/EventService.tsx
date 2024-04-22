@@ -79,7 +79,7 @@ export async function updateEvent(id: number, event: EventJson) {
     })
 }
 export async function addEvent(event: EventJson) {
-    await api.post('/events', {
+    await api.post('/events/' + event.hostId, {
         ...event,
     })
 }

@@ -3,4 +3,5 @@ export type EventJson = {
     eventName: string
     eventDate: string
     eventLocation: string
+    hostId: number
 }
