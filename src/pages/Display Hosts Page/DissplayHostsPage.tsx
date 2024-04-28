@@ -4,6 +4,7 @@ import {Layout} from '../../shared/components/layout/Layout'
 
 import Stomp from 'stompjs'
 
+import InfiniteScroll from 'react-infinite-scroll-component'
 import {HostContext} from '../../contexts/HostsContext'
 import {HostPaginationContext} from '../../contexts/HostsPaginationContext'
 import {OfflineContext} from '../../contexts/OfflineContext'
@@ -57,9 +58,9 @@ export default function DisplayHostPage() {
             getHostsPage(
                 currentPage - 1,
                 isAscending == 'ASC' ? true : false,
-                3,
-                !isOnline || !isServerOnline,
-                allHosts,
+                5,
+                !offlineContext.isServerOnline || !offlineContext.isOnline,
+                offlineContext.offlineDB,
             ).then((hosts) => {
                 setCurrentHosts(hosts)
                 setUpdateFlag(!updateFlag)
@@ -68,32 +69,25 @@ export default function DisplayHostPage() {
         })
     }
 
-    // const nrAddElems = 5
-    // const [itemsPerPage, setItemsPerPage] = useState(5)
-    // const currentEvents = events.slice(0, itemsPerPage)
-
-    // useEffect(() => {
-    //     const currentEvents = events.slice(0, itemsPerPage)
-    // }, [itemsPerPage])
-
-    ////////////////////////////
     const handleShowMore = () => {
         getHostsPage(
             currentPage,
             isAscending == 'ASC' ? true : false,
-            3,
-            !isOnline || !isServerOnline,
-            allHosts,
+            5,
+            !offlineContext.isServerOnline || !offlineContext.isOnline,
+            offlineContext.offlineDB,
         ).then((nextPage) => {
             console.log(
                 'isOnline: ' + isOnline + ' isServerOnline: ' + isServerOnline,
             )
 
             setCurrentHosts([...currentHosts, ...nextPage])
-            if ((currentPage + 1) * 3 - nrHosts < 3) {
+            if ((currentPage + 1) * 5 - nrHosts < 5) {
                 setCurrentPage(currentPage + 1)
                 hostPaginationContext.setHostPageId(currentPage + 1)
                 setShowNext(true)
+            } else {
+                setShowNext(false)
             }
         })
     }
@@ -101,17 +95,30 @@ export default function DisplayHostPage() {
         getHostsPage(
             0,
             isAscending == 'ASC' ? true : false,
-            currentPage * 3,
-            !isOnline || !isServerOnline,
-            allHosts,
+            currentPage * 5,
+            !offlineContext.isServerOnline || !offlineContext.isOnline,
+            offlineContext.offlineDB,
         ).then((events) => {
-            setCurrentHosts(events)
-            setShowNext(true)
+            console.log('OFFLINE HOSTS')
+            console.log(events)
+            if (events.length > 0 || !offlineContext.isServerOnline) {
+                setCurrentHosts(events)
+                setShowNext(true)
+            }
         })
-        getHostsSize(!isOnline || !isServerOnline, allHosts).then((size) => {
+        getHostsSize(
+            !offlineContext.isServerOnline || !offlineContext.isOnline,
+            offlineContext.offlineDB,
+        ).then((size) => {
+            console.log('Setting nr hosts => ' + size)
             setNrHosts(size)
         })
-    }, [isAscending, updateFlag, isServerOnline])
+    }, [
+        isAscending,
+        updateFlag,
+        offlineContext.isServerOnline,
+        offlineContext.isOnline,
+    ])
 
     useEffect(() => {
         const socket = new WebSocket('ws://localhost:8080/websocket')
@@ -136,42 +143,34 @@ export default function DisplayHostPage() {
     }, [currentPage])
 
     useEffect(() => {
+        console.log('CURRENT PAGE: ' + currentPage)
         getHostsPage(
             currentPage - 1,
             isAscending == 'ASC' ? true : false,
-            3,
-            !isOnline || !isServerOnline,
-            allHosts,
+            5,
+            !offlineContext.isServerOnline || !offlineContext.isOnline,
+            offlineContext.offlineDB,
         )
             .then((loadedPage) => {
-                setCurrentHosts(loadedPage)
-                console.log('LOADED ')
+                if (loadedPage.length > 0) {
+                    setCurrentHosts(loadedPage)
+                    console.log('LOADED ')
+                }
             })
             .catch((error) => {
                 console.log('eroare')
                 console.log(error)
             })
-
-        // setInterval(() => {
-        //     setIsOnline(navigator.onLine)
-        //     checkServerStatus()
-        //         .then((result) => {
-        //             setIsServerOnline(result)
-        //         })
-        //         .catch(() => {
-        //             setIsServerOnline(false)
-        //         })
-        // }, 1000)
     }, [])
 
     // console.log('ONLINE ' + isServerOnline)
-    // if (!isOnline)
+    // if (!offlineContext.isOnline)
     //     return (
     //         <div className='container'>
     //             <div className='offline'>Offline</div>
     //         </div>
     //     )
-    // if (!isServerOnline)
+    // if (!offlineContext.isServerOnline)
     //     return (
     //         <div className='container'>
     //             <div className='offline'>Server is offline</div>
@@ -182,44 +181,56 @@ export default function DisplayHostPage() {
     ////////////////////////////
 
     return (
-        <Layout
-            entity='Hosts'
-            children={
-                <div className='main-page-container'>
-                    <button
-                        className='sort'
-                        onClick={() =>
-                            setIsAscending(
-                                isAscending === 'ASC' ? 'DESC' : 'ASC',
-                            )
-                        }
-                    >
-                        {isAscending}
-                    </button>
-
-                    <div className='events-list' data-testid='events-list'>
-                        {currentHosts.map((host) => (
-                            <HostCard
-                                givenHost={host}
-                                removeMethod={removeMethod}
-                                key={host.id}
-                            />
-                        ))}
-                    </div>
-                    {Math.min(currentPage * 3, nrHosts) != nrHosts && (
-                        <button
-                            className='showMoreBtn'
-                            onClick={() => handleShowMore()}
-                        >
-                            {' '}
-                            View More {Math.min(
-                                currentPage * 3,
-                                nrHosts,
-                            )} / {nrHosts}
-                        </button>
-                    )}
+        <InfiniteScroll
+            dataLength={currentPage * 5}
+            next={handleShowMore}
+            hasMore={showNext}
+            loader={
+                <div className='loading'>
+                    <p>Loading ...</p>
                 </div>
             }
-        ></Layout>
+        >
+            <Layout
+                entity='Hosts'
+                children={
+                    <div className='main-page-container'>
+                        <button
+                            className='sort'
+                            onClick={() =>
+                                setIsAscending(
+                                    isAscending === 'ASC' ? 'DESC' : 'ASC',
+                                )
+                            }
+                        >
+                            {isAscending}
+                        </button>
+
+                        <div className='events-list' data-testid='events-list'>
+                            {currentHosts.map((host) => (
+                                <HostCard
+                                    givenHost={host}
+                                    removeMethod={removeMethod}
+                                    key={host.id}
+                                />
+                            ))}
+                        </div>
+
+                        {/* {Math.min(currentPage * 5, nrHosts) == nrHosts || (
+                            <button
+                                className='showMoreBtn'
+                                onClick={() => handleShowMore()}
+                            >
+                                {' '}
+                                View More {Math.min(
+                                    currentPage * 5,
+                                    nrHosts,
+                                )} / {nrHosts}
+                            </button>
+                        )} */}
+                    </div>
+                }
+            ></Layout>
+        </InfiniteScroll>
     )
 }

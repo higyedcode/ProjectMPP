@@ -4,6 +4,7 @@ import {EventCard} from '../../features/Display Events/EventCard'
 import {Event} from '../../models/Event'
 import {Layout} from '../../shared/components/layout/Layout'
 
+import InfiniteScroll from 'react-infinite-scroll-component'
 import {EventContext} from '../../contexts/EventContext'
 import {PaginationContext} from '../../contexts/PaginationContext'
 import {
@@ -79,10 +80,12 @@ export default function DisplayEventPage() {
             isAscending == 'ASC' ? true : false,
         ).then((nextPage) => {
             setCurrentEvents([...currentEvents, ...nextPage])
-            if ((currentPage + 1) * 3 - nrEvents < 3) {
+            if ((currentPage + 1) * 5 - nrEvents < 5) {
                 setCurrentPage(currentPage + 1)
                 paginationContext.setCurrentPageId(currentPage + 1)
                 setShowNext(true)
+            } else {
+                setShowNext(false)
             }
         })
     }
@@ -92,7 +95,7 @@ export default function DisplayEventPage() {
             hostId,
             0,
             isAscending == 'ASC' ? true : false,
-            currentPage * 3,
+            currentPage * 5,
         ).then((events) => {
             setCurrentEvents(events)
             setShowNext(true)
@@ -130,7 +133,7 @@ export default function DisplayEventPage() {
     useEffect(() => {
         currentPage = 1
 
-        getEventsPage(hostId, 0, isAscending == 'ASC' ? true : false, 3)
+        getEventsPage(hostId, 0, isAscending == 'ASC' ? true : false, 5)
             .then((loadedPage) => {
                 setCurrentEvents(loadedPage)
                 console.log('LOADED ' + loadedPage)
@@ -145,44 +148,56 @@ export default function DisplayEventPage() {
     ////////////////////////////
 
     return (
-        <Layout
-            entity='Events'
-            children={
-                <div className='main-page-container'>
-                    <button
-                        className='sort'
-                        onClick={() =>
-                            setIsAscending(
-                                isAscending === 'ASC' ? 'DESC' : 'ASC',
-                            )
-                        }
-                    >
-                        {isAscending}
-                    </button>
-
-                    <div className='events-list' data-testid='events-list'>
-                        {currentEvents.map((event) => (
-                            <EventCard
-                                givenEvent={event}
-                                removeMethod={removeMethod}
-                                key={event.eventId}
-                            />
-                        ))}
-                    </div>
-                    {Math.min(currentPage * 3, nrEvents) != nrEvents && (
-                        <button
-                            className='showMoreBtn'
-                            onClick={() => handleShowMore()}
-                        >
-                            {' '}
-                            View More {Math.min(
-                                currentPage * 3,
-                                nrEvents,
-                            )} / {nrEvents}
-                        </button>
-                    )}
+        <InfiniteScroll
+            dataLength={currentPage * 5}
+            next={handleShowMore}
+            hasMore={showNext}
+            loader={
+                <div className='loading'>
+                    <p>Loading ...</p>
                 </div>
             }
-        ></Layout>
+        >
+            <Layout
+                entity='Events'
+                children={
+                    <div className='main-page-container'>
+                        <button
+                            className='sort'
+                            onClick={() =>
+                                setIsAscending(
+                                    isAscending === 'ASC' ? 'DESC' : 'ASC',
+                                )
+                            }
+                        >
+                            {isAscending}
+                        </button>
+
+                        <div className='events-list' data-testid='events-list'>
+                            {currentEvents.map((event) => (
+                                <EventCard
+                                    givenEvent={event}
+                                    removeMethod={removeMethod}
+                                    key={event.eventId}
+                                />
+                            ))}
+                        </div>
+                        {/* {Math.min(currentPage * 5, nrEvents) != nrEvents && (
+                            <button
+                                className='showMoreBtn'
+                                onClick={() => handleShowMore()}
+                            >
+                                {' '}
+                                View More {Math.min(
+                                    currentPage * 5,
+                                    nrEvents,
+                                )}{' '}
+                                / {nrEvents}
+                            </button>
+                        )} */}
+                    </div>
+                }
+            ></Layout>
+        </InfiniteScroll>
     )
 }

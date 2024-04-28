@@ -17,8 +17,7 @@ import DisplayHostPage from './pages/Display Hosts Page/DissplayHostsPage'
 import EditHostPage from './pages/Edit Host Page/EditHostPage'
 import LoadingPage from './pages/Loading Page/LoadingPage'
 import WebSocketPage from './pages/WebSocket Page/WebSocketPage'
-import {getEvents} from './services/EventService/EventService'
-import {checkServerStatus, getHosts} from './services/HostService/HostService'
+import {checkServerStatus} from './services/EventService/EventService'
 
 const DisplayEventPage = React.lazy(
     () => import('./pages/Display Events Page/DissplayEventsPage'),
@@ -177,22 +176,22 @@ function App() {
     let [isServerOnline, setIsServerOnline] = useState<boolean>(true)
 
     useEffect(() => {
-        getEvents()
-            .then((eventsList) => {
-                setEvents(eventsList)
-            })
-            .catch((error) => {
-                console.error('Error fetching events:', error)
-            })
+        // getEvents()
+        //     .then((eventsList) => {
+        //         setEvents(eventsList)
+        //     })
+        //     .catch((error) => {
+        //         console.error('Error fetching events:', error)
+        //     })
 
-        getHosts(true, hosts)
-            .then((hostsList) => {
-                setHosts(hostsList)
-                console.log('LOADED\n' + hostsList)
-            })
-            .catch((error) => {
-                console.log('Error fetching hosts: ' + error)
-            })
+        // getHosts(true, hosts)
+        //     .then((hostsList) => {
+        //         setHosts(hostsList)
+        //         console.log('LOADED\n' + hostsList)
+        //     })
+        //     .catch((error) => {
+        //         console.log('Error fetching hosts: ' + error)
+        //     })
 
         setInterval(() => {
             setIsOnline(navigator.onLine)
@@ -203,7 +202,7 @@ function App() {
                 .catch(() => {
                     setIsServerOnline(false)
                 })
-        }, 1000)
+        }, 10000)
         offlineDB.openDatabase()
     }, []) //emtpy dependency => runs only once on mount
 

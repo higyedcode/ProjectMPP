@@ -6,19 +6,21 @@ import {HostJson} from '../../types/hostJson.types.js'
 export async function getHostById(
     id: string,
     offline: boolean,
-    allHosts: Host[],
+    offlineDB: OfflineDatabase,
 ) {
     if (offline) {
-        return allHosts.find((host) => host.id == parseInt(id))
+        let allHosts: Host[] = await offlineDB.getAllHostDBItems()
+
+        return allHosts!.find((host) => host.id == parseInt(id))
     }
     let response = await api.get('/hosts/' + id)
     // console.log("RESPONSE DATA __ " + response.data)
     return Host.fromJson(response.data)
 }
 
-export async function getHosts(offline: boolean, allHosts: Host[]) {
+export async function getHosts(offline: boolean, offlineDB: OfflineDatabase) {
     if (offline) {
-        return allHosts
+        return await offlineDB.getAllHostDBItems()
     }
 
     let response = await api.get('/hosts')
@@ -30,15 +32,41 @@ export async function getHosts(offline: boolean, allHosts: Host[]) {
 
     return hosts
 }
-export async function getHostsSize(offline: boolean, allHosts: Host[]) {
+export async function getHostsSize(
+    offline: boolean,
+    offlineDB: OfflineDatabase,
+) {
     if (offline) {
-        return allHosts.length
+        return (await offlineDB.getAllHostDBItems()).length
     }
     let response = await api.get('/hosts/hostsSize')
     let size: number = response.data
-    console.log(size)
+    console.log('SIZE + ' + size)
 
     return size
+}
+
+export function addOfflineEVents(offlineDB: OfflineDatabase) {
+    console.log('ADDING OFFLINE EVENTS')
+    offlineDB.getAllHostDBItems().then((hosts) => {
+        console.log('OFFLINE hosts: ')
+        console.log(hosts)
+        hosts.forEach((host) => {
+            addhost(
+                {
+                    id: host.id,
+                    name: host.name,
+                    email: host.email,
+                    bio: host.bio,
+                    organisation: host.org,
+                    socialMediaLink: host.link,
+                },
+                false,
+                offlineDB,
+            )
+        })
+        offlineDB.clearDatabase()
+    })
 }
 
 export async function getHostsPage(
@@ -46,13 +74,23 @@ export async function getHostsPage(
     isAscending: boolean,
     pageSize: number = 3,
     offline: boolean,
-    allHosts: Host[],
+    offlineDB: OfflineDatabase,
 ) {
     if (offline) {
-        if (isAscending) return allHosts.sort().slice(pageId, pageSize)
-        else return allHosts.sort().reverse().slice(pageId, pageSize)
+        if (isAscending) {
+            console.log('LOADED' + (await offlineDB.getAllHostDBItems()))
+            return (await offlineDB.getAllHostDBItems())
+                .sort()
+                .slice(pageId, pageSize)
+        } else
+            return (await offlineDB.getAllHostDBItems())
+                .sort()
+                .reverse()
+                .slice(pageId, pageSize)
     }
+
     try {
+        addOfflineEVents(offlineDB)
         let response = await api.get(
             '/hosts/getPage?page=' +
                 pageId +
@@ -79,14 +117,15 @@ export async function updatehost(
     id: string,
     host: HostJson,
     offline: boolean,
-    allHosts: Host[],
     offlineDB: OfflineDatabase,
 ) {
     if (offline) {
-        getHostById(id, true, allHosts).then((host) => {
-            offlineDB.addHost(host!, 'update')
-        })
-        return
+        offlineDB
+            .getHostDBItemsWithId(parseInt(id))
+            .then((hostIdInIndexedDB) => {
+                offlineDB.updateHost(hostIdInIndexedDB, Host.fromJson(host))
+                console.log('UPDATED HOST OFFLINE!')
+            })
     }
     await api.patch('/hosts/' + id, {
         ...host,
@@ -95,14 +134,15 @@ export async function updatehost(
 export async function addhost(
     host: HostJson,
     offline: boolean,
-    allHosts: Host[],
     offlineDB: OfflineDatabase,
 ) {
     if (offline) {
         let hostToAdd = Host.fromJson(host)
-        offlineDB.addHost(hostToAdd!, 'add')
-        allHosts.push(hostToAdd)
-        return
+        offlineDB.getAllHostDBItems().then((hosts) => {
+            hostToAdd.id = hosts.length
+            offlineDB.addHost(hostToAdd!)
+            return
+        })
     }
     await api.post('/hosts', {
         ...host,
@@ -116,14 +156,10 @@ export async function deletehost(
     offlineDB: OfflineDatabase,
 ) {
     if (offline) {
-        getHostById(id.toString(), true, allHosts).then((host) => {
-            offlineDB.addHost(host!, 'delete')
-            allHosts.filter((host) => host.id !== id)
-            return
-        })
-
-        await api.delete('/hosts/' + id)
+        return
     }
+
+    await api.delete('/hosts/' + id)
 }
 export async function checkServerStatus() {
     console.log('Checking server status ...')
