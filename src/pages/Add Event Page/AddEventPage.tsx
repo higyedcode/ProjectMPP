@@ -55,7 +55,7 @@ export default function AddEventPage() {
             getHostById(
                 eventsContext.hostId.toString(),
                 !offlineContext.isOnline || !offlineContext.isServerOnline,
-                hostsContext.hosts,
+                offlineContext.offlineDB,
             ).then((host) => {
                 const inputEvent = handleOnClick(
                     idInput,

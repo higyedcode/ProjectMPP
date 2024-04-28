@@ -70,7 +70,6 @@ export default function AddHostPage() {
             addhost(
                 inputHost,
                 !offlineContext.isOnline || !offlineContext.isServerOnline,
-                hostsContext.hosts,
                 offlineContext.offlineDB,
             ).then(() => navigate('/'))
             navigate('/')
@@ -87,7 +86,7 @@ export default function AddHostPage() {
                     className='main-page-container'
                     data-testid='main-page-container'
                 >
-                    <div className='main-title'>Add event</div>
+                    <div className='main-title'>Add host</div>
 
                     <HostForm
                         idInput={idInput}
@@ -101,7 +100,7 @@ export default function AddHostPage() {
 
                     <Button
                         type='submit'
-                        buttonMessage='Add event'
+                        buttonMessage='Add host'
                         className='form-button'
                         onclick={handleOnClickWrapper}
                     />

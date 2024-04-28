@@ -79,7 +79,7 @@ export default function EditHostPage() {
         getHostById(
             id!.toString(),
             !offlineContext.isOnline || !offlineContext.isServerOnline,
-            hostsContext.hosts,
+            offlineContext.offlineDB,
         )
             .then((foundHost) => {
                 console.log('FOUND: ' + foundHost!.toString())
@@ -114,7 +114,6 @@ export default function EditHostPage() {
                 selectedHost.id.toString(),
                 newHost,
                 !offlineContext.isOnline || !offlineContext.isServerOnline,
-                hostsContext.hosts,
                 offlineContext.offlineDB,
             ).then(() => {
                 navigate('/')
