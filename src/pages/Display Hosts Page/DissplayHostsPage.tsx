@@ -2,8 +2,6 @@ import {useContext, useEffect, useState} from 'react'
 
 import {Layout} from '../../shared/components/layout/Layout'
 
-import Stomp from 'stompjs'
-
 import InfiniteScroll from 'react-infinite-scroll-component'
 import {HostContext} from '../../contexts/HostsContext'
 import {HostPaginationContext} from '../../contexts/HostsPaginationContext'
@@ -58,7 +56,7 @@ export default function DisplayHostPage() {
             getHostsPage(
                 currentPage - 1,
                 isAscending == 'ASC' ? true : false,
-                5,
+                15,
                 !offlineContext.isServerOnline || !offlineContext.isOnline,
                 offlineContext.offlineDB,
             ).then((hosts) => {
@@ -70,49 +68,74 @@ export default function DisplayHostPage() {
     }
 
     const handleShowMore = () => {
+        console.log('SHOW MORE')
         getHostsPage(
             currentPage,
             isAscending == 'ASC' ? true : false,
-            5,
+            15,
             !offlineContext.isServerOnline || !offlineContext.isOnline,
             offlineContext.offlineDB,
-        ).then((nextPage) => {
-            console.log(
-                'isOnline: ' + isOnline + ' isServerOnline: ' + isServerOnline,
-            )
+        )
+            .then((nextPage) => {
+                console.log(
+                    'isOnline: ' +
+                        isOnline +
+                        ' isServerOnline: ' +
+                        isServerOnline,
+                )
 
-            setCurrentHosts([...currentHosts, ...nextPage])
-            if ((currentPage + 1) * 5 - nrHosts < 5) {
-                setCurrentPage(currentPage + 1)
-                hostPaginationContext.setHostPageId(currentPage + 1)
+                setCurrentHosts([...currentHosts, ...nextPage])
+                if ((currentPage + 1) * 15 - nrHosts < 15) {
+                    setCurrentPage(currentPage + 1)
+                    hostPaginationContext.setHostPageId(currentPage + 1)
+                    setShowNext(true)
+                } else {
+                    setShowNext(false)
+                }
+            })
+            .catch((error) => {
+                console.log('eroare')
+                console.log(error)
                 setShowNext(true)
-            } else {
-                setShowNext(false)
-            }
-        })
+                updateFlag = !updateFlag
+            })
     }
     useEffect(() => {
         getHostsPage(
             0,
             isAscending == 'ASC' ? true : false,
-            currentPage * 5,
+            currentPage * 15,
             !offlineContext.isServerOnline || !offlineContext.isOnline,
             offlineContext.offlineDB,
-        ).then((events) => {
-            console.log('OFFLINE HOSTS')
-            console.log(events)
-            if (events.length > 0 || !offlineContext.isServerOnline) {
-                setCurrentHosts(events)
+        )
+            .then((events) => {
+                console.log('OFFLINE HOSTS')
+                console.log(events)
+                if (events.length > 0 || !offlineContext.isServerOnline) {
+                    setCurrentHosts(events)
+                    setShowNext(true)
+                }
+            })
+            .catch((error) => {
+                console.log('eroare')
+                console.log(error)
                 setShowNext(true)
-            }
-        })
+                updateFlag = !updateFlag
+            })
         getHostsSize(
             !offlineContext.isServerOnline || !offlineContext.isOnline,
             offlineContext.offlineDB,
-        ).then((size) => {
-            console.log('Setting nr hosts => ' + size)
-            setNrHosts(size)
-        })
+        )
+            .then((size) => {
+                console.log('Setting nr hosts => ' + size)
+                setNrHosts(size)
+            })
+            .catch((error) => {
+                console.log('eroare')
+                console.log(error)
+                setShowNext(true)
+                updateFlag = !updateFlag
+            })
     }, [
         isAscending,
         updateFlag,
@@ -121,25 +144,23 @@ export default function DisplayHostPage() {
     ])
 
     useEffect(() => {
-        const socket = new WebSocket('ws://localhost:8080/websocket')
-        const stompClient = Stomp.over(socket)
-
-        // socket.onopen = () => {
-        //     console.log("CONNECTION RECEIVED");
-        // }
-        // socket.onerror = (error) => {
-        //     console.log("ERROR " + error);
-        // }
-        //subscribe to '/topic/events' endpoint
-        stompClient.connect({}, () => {
-            console.log('CONNECTED')
-            stompClient.subscribe('/topic/events', (response) => {
-                const newMessage = response.body
-                console.log('MESSAGE received: ' + newMessage)
-
-                setUpdateFlag(!updateFlag)
-            })
-        })
+        // const socket = new WebSocket('ws://localhost:8080/websocket')
+        // const stompClient = Stomp.over(socket)
+        // // socket.onopen = () => {
+        // //     console.log("CONNECTION RECEIVED");
+        // // }
+        // // socket.onerror = (error) => {
+        // //     console.log("ERROR " + error);
+        // // }
+        // //subscribe to '/topic/events' endpoint
+        // stompClient.connect({}, () => {
+        //     console.log('CONNECTED')
+        //     stompClient.subscribe('/topic/events', (response) => {
+        //         const newMessage = response.body
+        //         console.log('MESSAGE received: ' + newMessage)
+        //         setUpdateFlag(!updateFlag)
+        //     })
+        // })
     }, [currentPage])
 
     useEffect(() => {
@@ -147,7 +168,7 @@ export default function DisplayHostPage() {
         getHostsPage(
             currentPage - 1,
             isAscending == 'ASC' ? true : false,
-            5,
+            15,
             !offlineContext.isServerOnline || !offlineContext.isOnline,
             offlineContext.offlineDB,
         )
@@ -162,6 +183,20 @@ export default function DisplayHostPage() {
                 console.log(error)
             })
     }, [])
+    useEffect(() => {
+        // Parse the query string of the URL
+        const params = new URLSearchParams(window.location.search)
+
+        // Get the value of the 'logout' parameter
+        const logoutValue = params.get('logout')
+
+        // Check if the 'logout' parameter exists and has a value of '1'
+        if (logoutValue === '1') {
+            // Perform logout logic here
+            console.log('Logout requested')
+            localStorage.clear()
+        }
+    }, []) // Empty dependency array ensures the effect runs only once
 
     // console.log('ONLINE ' + isServerOnline)
     // if (!offlineContext.isOnline)
@@ -182,7 +217,7 @@ export default function DisplayHostPage() {
 
     return (
         <InfiniteScroll
-            dataLength={currentPage * 5}
+            dataLength={currentPage * 15}
             next={handleShowMore}
             hasMore={showNext}
             loader={
@@ -216,18 +251,19 @@ export default function DisplayHostPage() {
                             ))}
                         </div>
 
-                        {/* {Math.min(currentPage * 5, nrHosts) == nrHosts || (
+                        {Math.min(currentPage * 15, nrHosts) == nrHosts || (
                             <button
                                 className='showMoreBtn'
                                 onClick={() => handleShowMore()}
                             >
                                 {' '}
                                 View More {Math.min(
-                                    currentPage * 5,
+                                    currentPage * 15,
                                     nrHosts,
-                                )} / {nrHosts}
+                                )}{' '}
+                                / {nrHosts}
                             </button>
-                        )} */}
+                        )}
                     </div>
                 }
             ></Layout>

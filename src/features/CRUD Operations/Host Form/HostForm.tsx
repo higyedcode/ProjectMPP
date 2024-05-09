@@ -56,6 +56,13 @@ function createFormEntries(props: HostFormType) {
             disabled: false,
         },
         {
+            label: 'Password',
+            ref: props.passwordInput,
+            placeHolder: 'Password',
+            defaultValue: '',
+            disabled: false,
+        },
+        {
             label: 'Bio',
             ref: props.bioInput,
             placeHolder: 'About you...',

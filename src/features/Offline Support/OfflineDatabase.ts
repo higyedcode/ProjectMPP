@@ -1,5 +1,6 @@
 import {Event} from '../../models/Event'
 import {Host} from '../../models/Host'
+import {HostJson} from '../../types/hostJson.types'
 
 export class OfflineDatabase {
     public openDatabase(): Promise<IDBDatabase> {
@@ -152,7 +153,7 @@ export class OfflineDatabase {
             }
         })
     }
-    public getAllHostDBItems(): Promise<Host[]> {
+    public getAllHostDBItems(): Promise<HostJson[]> {
         return new Promise(async (resolve, reject) => {
             try {
                 const db = await this.openDatabase()
@@ -165,14 +166,16 @@ export class OfflineDatabase {
                     const data = request.result
                     const eventClasses = data.map((item) => {
                         const {id, ...eventClass} = item // Destructure the object, excluding the id field
-                        return new Host(
-                            eventClass._id,
-                            eventClass._name,
-                            eventClass._email,
-                            eventClass._bio,
-                            eventClass._org,
-                            eventClass._link,
-                        )
+                        const hostJson: HostJson = {
+                            id: eventClass._id,
+                            name: eventClass._name,
+                            email: eventClass._email,
+                            password: eventClass._password,
+                            bio: eventClass._bio,
+                            organisation: eventClass._org,
+                            socialMediaLink: eventClass._link,
+                        }
+                        return hostJson
                     })
                     resolve(
                         eventClasses,

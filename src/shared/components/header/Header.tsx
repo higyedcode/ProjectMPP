@@ -1,5 +1,5 @@
+import {jwtDecode} from 'jwt-decode'
 import {Link} from 'react-router-dom'
-
 import './Header.css'
 
 const Header = ({entity}) => {
@@ -11,6 +11,32 @@ const Header = ({entity}) => {
                 </Link>
 
                 <div className='links'>
+                    {localStorage.getItem('token') && (
+                        <div>
+                            <Link to='/events' className='link'>
+                                {
+                                    jwtDecode(localStorage.getItem('token')!)
+                                        .email
+                                }
+                            </Link>
+                        </div>
+                    )}
+
+                    {localStorage.getItem('token') && (
+                        <div>
+                            <Link to='/?logout=1' className='link'>
+                                Logout
+                            </Link>
+                        </div>
+                    )}
+                    {!localStorage.getItem('token') && (
+                        <div>
+                            <Link to='/login' className='link'>
+                                Login
+                            </Link>
+                        </div>
+                    )}
+
                     <div>
                         <Link
                             to={entity === 'Events' ? '/events' : '/'}
@@ -25,7 +51,7 @@ const Header = ({entity}) => {
                             to={'/add' + entity.slice(0, -1)}
                             className='link'
                         >
-                            Add {entity}
+                            {entity == 'Events' ? 'Add Event' : 'Register'}
                         </Link>
                     </div>
                     {entity == 'Events' && (

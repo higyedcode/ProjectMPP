@@ -5,7 +5,6 @@ import {HostContext} from '../../contexts/HostsContext'
 import {OfflineContext} from '../../contexts/OfflineContext'
 import {EventForm} from '../../features/CRUD Operations/Event Form/EventForm'
 import {addEvent} from '../../services/EventService/EventService'
-import {getHostById} from '../../services/HostService/HostService'
 import {Button} from '../../shared/components/button/button'
 import {Layout} from '../../shared/components/layout/Layout'
 import {EventJson} from '../../types/eventJson.types'
@@ -16,7 +15,6 @@ function handleOnClick(
     nameInput: React.RefObject<HTMLInputElement>,
     dateInput: React.RefObject<HTMLInputElement>,
     locationInput: React.RefObject<HTMLInputElement>,
-    hostId: number,
 ): EventJson {
     if (
         !nameInput.current!.value ||
@@ -27,13 +25,13 @@ function handleOnClick(
 
     const eventName: string = nameInput.current!.value,
         eventDate: string = dateInput.current!.value,
-        eventLocation: string = locationInput.current!.value,
-        hostID: number = hostId
+        eventLocation: string = locationInput.current!.value
+
     return {
         eventName: eventName,
         eventDate: eventDate,
         eventLocation: eventLocation,
-        hostId: hostID,
+        hostId: 0,
     }
 }
 
@@ -49,25 +47,34 @@ export default function AddEventPage() {
     const eventsContext = useContext(EventContext)!
     const offlineContext = useContext(OfflineContext)!
     const hostsContext = useContext(HostContext)!
+    if (localStorage.getItem('token') === null) {
+        return (
+            <Layout
+                entity='Events'
+                children={
+                    <div className='main-page-container'>
+                        <h1> Please log in to view events </h1>
+                    </div>
+                }
+            ></Layout>
+        )
+    }
 
     const handleOnClickWrapper = () => {
         try {
-            getHostById(
-                eventsContext.hostId.toString(),
-                !offlineContext.isOnline || !offlineContext.isServerOnline,
-                offlineContext.offlineDB,
-            ).then((host) => {
-                const inputEvent = handleOnClick(
-                    idInput,
-                    nameInput,
-                    dateInput,
-                    locationInput,
-                    host!.id,
-                )
-                console.log(inputEvent)
-                addEvent(inputEvent).then(() => navigate('/events'))
-                navigate('/events')
-            })
+            let token = localStorage.getItem('token')
+            let headers = {
+                Authorization: `Bearer ${token}`,
+            }
+            const inputEvent = handleOnClick(
+                idInput,
+                nameInput,
+                dateInput,
+                locationInput,
+            )
+            console.log(inputEvent)
+            addEvent(inputEvent).then(() => navigate('/events'))
+            navigate('/events')
         } catch (error) {
             alert(error)
         }

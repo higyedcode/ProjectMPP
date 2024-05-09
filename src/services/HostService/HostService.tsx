@@ -9,7 +9,8 @@ export async function getHostById(
     offlineDB: OfflineDatabase,
 ) {
     if (offline) {
-        let allHosts: Host[] = await offlineDB.getAllHostDBItems()
+        let allHostsJson: HostJson[] = await offlineDB.getAllHostDBItems()
+        let allHosts = allHostsJson.map((hostJson) => Host.fromJson(hostJson))
 
         return allHosts!.find((host) => host.id == parseInt(id))
     }
@@ -57,9 +58,10 @@ export function addOfflineEVents(offlineDB: OfflineDatabase) {
                     id: host.id,
                     name: host.name,
                     email: host.email,
+                    password: host.password,
                     bio: host.bio,
-                    organisation: host.org,
-                    socialMediaLink: host.link,
+                    organisation: host.organisation,
+                    socialMediaLink: host.socialMediaLink,
                 },
                 false,
                 offlineDB,
@@ -69,21 +71,31 @@ export function addOfflineEVents(offlineDB: OfflineDatabase) {
     })
 }
 
+export async function getNrEventsByHostId(hostId: number) {
+    let response = await api.get('/hosts/nrEvents?hostId=' + hostId)
+    let size: number = response.data
+    console.log('SIZE + ' + size)
+
+    return size
+}
+
 export async function getHostsPage(
     pageId: number,
     isAscending: boolean,
     pageSize: number = 3,
     offline: boolean,
     offlineDB: OfflineDatabase,
-) {
+): Promise<Host[]> {
     if (offline) {
         if (isAscending) {
             console.log('LOADED' + (await offlineDB.getAllHostDBItems()))
             return (await offlineDB.getAllHostDBItems())
+                .map((host) => Host.fromJson(host))
                 .sort()
                 .slice(pageId, pageSize)
         } else
             return (await offlineDB.getAllHostDBItems())
+                .map((host) => Host.fromJson(host))
                 .sort()
                 .reverse()
                 .slice(pageId, pageSize)
@@ -111,6 +123,28 @@ export async function getHostsPage(
         console.error((error as Error).message)
         return []
     }
+}
+
+export async function getHostByEmailAndPassword(
+    email: string,
+    password: string,
+) {
+    return new Promise<string>((resolve) => {
+        api.get('/hosts/auth?email=' + email + '&password=' + password)
+            .then((response) => {
+                if (response.status === 200) {
+                    console.log(response.data)
+                    localStorage.setItem('token', response.data)
+                    resolve('OK')
+                } else {
+                    console.log('ERROR')
+                    resolve('Invalid credentials!')
+                }
+            })
+            .catch((error) => {
+                resolve('Invalid credentials!')
+            })
+    })
 }
 
 export async function updatehost(
@@ -144,6 +178,8 @@ export async function addhost(
             return
         })
     }
+    console.log('ADDING HOST -> ')
+    console.log(host)
     await api.post('/hosts', {
         ...host,
     })

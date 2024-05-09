@@ -16,6 +16,7 @@ import AddHostPage from './pages/Add Host Page/AddHostPage'
 import DisplayHostPage from './pages/Display Hosts Page/DissplayHostsPage'
 import EditHostPage from './pages/Edit Host Page/EditHostPage'
 import LoadingPage from './pages/Loading Page/LoadingPage'
+import LoginPage from './pages/Login Page/LoginPage'
 import WebSocketPage from './pages/WebSocket Page/WebSocketPage'
 import {checkServerStatus} from './services/EventService/EventService'
 
@@ -385,6 +386,16 @@ function App() {
                                                 fallback={<LoadingPage />}
                                             >
                                                 <WebSocketPage />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path='/login'
+                                        element={
+                                            <Suspense
+                                                fallback={<LoadingPage />}
+                                            >
+                                                <LoginPage />
                                             </Suspense>
                                         }
                                     />

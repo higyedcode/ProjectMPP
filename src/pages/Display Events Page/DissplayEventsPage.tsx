@@ -32,6 +32,18 @@ export default function DisplayEventPage() {
     let [currentPage, setCurrentPage] = useState<number>(1)
     let [currentEvents, setCurrentEvents] = useState<Event[]>([])
 
+    if (localStorage.getItem('token') === null) {
+        return (
+            <Layout
+                entity='Events'
+                children={
+                    <div className='main-page-container'>
+                        <h1> Please log in to view events </h1>
+                    </div>
+                }
+            ></Layout>
+        )
+    }
     // let [scrollPosition, setScrollPosition] = useState<number>(0);
 
     // let [isOnline, setIsOnline] = useState<boolean>(navigator.onLine)
@@ -51,7 +63,6 @@ export default function DisplayEventPage() {
         deleteEvent(id!).then(() => {
             console.log('DELETE ' + id)
             getEventsPage(
-                hostId,
                 currentPage - 1,
                 isAscending == 'ASC' ? true : false,
             ).then((events) => {
@@ -62,8 +73,8 @@ export default function DisplayEventPage() {
         })
     }
 
-    // const nrAddElems = 5
-    // const [itemsPerPage, setItemsPerPage] = useState(5)
+    // const nrAddElems = 15
+    // const [itemsPerPage, setItemsPerPage] = useState(15)
     // const currentEvents = events.slice(0, itemsPerPage)
 
     // useEffect(() => {
@@ -74,33 +85,30 @@ export default function DisplayEventPage() {
     const handleShowMore = () => {
         console.log(hostId)
         console.log(currentPage - 1)
-        getEventsPage(
-            hostId,
-            currentPage,
-            isAscending == 'ASC' ? true : false,
-        ).then((nextPage) => {
-            setCurrentEvents([...currentEvents, ...nextPage])
-            if ((currentPage + 1) * 5 - nrEvents < 5) {
-                setCurrentPage(currentPage + 1)
-                paginationContext.setCurrentPageId(currentPage + 1)
-                setShowNext(true)
-            } else {
-                setShowNext(false)
-            }
-        })
+        getEventsPage(currentPage, isAscending == 'ASC' ? true : false).then(
+            (nextPage) => {
+                setCurrentEvents([...currentEvents, ...nextPage])
+                if ((currentPage + 1) * 15 - nrEvents < 15) {
+                    setCurrentPage(currentPage + 1)
+                    paginationContext.setCurrentPageId(currentPage + 1)
+                    setShowNext(true)
+                } else {
+                    setShowNext(false)
+                }
+            },
+        )
     }
     useEffect(() => {
         console.log('isAscending/updateFlag changed')
         getEventsPage(
-            hostId,
             0,
             isAscending == 'ASC' ? true : false,
-            currentPage * 5,
+            currentPage * 15,
         ).then((events) => {
             setCurrentEvents(events)
             setShowNext(true)
         })
-        getEventsSizeByHostId(hostId).then((size) => {
+        getEventsSizeByHostId().then((size) => {
             console.log('NR EVENTS ' + size)
             setNrEvents(size)
         })
@@ -133,7 +141,7 @@ export default function DisplayEventPage() {
     useEffect(() => {
         currentPage = 1
 
-        getEventsPage(hostId, 0, isAscending == 'ASC' ? true : false, 5)
+        getEventsPage(0, isAscending == 'ASC' ? true : false, 15)
             .then((loadedPage) => {
                 setCurrentEvents(loadedPage)
                 console.log('LOADED ' + loadedPage)
@@ -149,7 +157,7 @@ export default function DisplayEventPage() {
 
     return (
         <InfiniteScroll
-            dataLength={currentPage * 5}
+            dataLength={currentPage * 15}
             next={handleShowMore}
             hasMore={showNext}
             loader={
@@ -174,22 +182,22 @@ export default function DisplayEventPage() {
                         </button>
 
                         <div className='events-list' data-testid='events-list'>
-                            {currentEvents.map((event) => (
+                            {currentEvents.map((event, index) => (
                                 <EventCard
                                     givenEvent={event}
                                     removeMethod={removeMethod}
-                                    key={event.eventId}
+                                    key={index}
                                 />
                             ))}
                         </div>
-                        {/* {Math.min(currentPage * 5, nrEvents) != nrEvents && (
+                        {/* {Math.min(currentPage * 15, nrEvents) != nrEvents && (
                             <button
                                 className='showMoreBtn'
                                 onClick={() => handleShowMore()}
                             >
                                 {' '}
                                 View More {Math.min(
-                                    currentPage * 5,
+                                    currentPage * 15,
                                     nrEvents,
                                 )}{' '}
                                 / {nrEvents}

@@ -14,6 +14,7 @@ function handleOnClick(
     idInput: React.RefObject<HTMLInputElement>,
     nameInput: React.RefObject<HTMLInputElement>,
     emailInput: React.RefObject<HTMLInputElement>,
+    passwordInput: React.RefObject<HTMLInputElement>,
     bioInput: React.RefObject<HTMLInputElement>,
     orgInput: React.RefObject<HTMLInputElement>,
     linkInput: React.RefObject<HTMLInputElement>,
@@ -22,6 +23,7 @@ function handleOnClick(
         !nameInput.current!.value ||
         !emailInput.current!.value ||
         !bioInput.current!.value ||
+        !passwordInput.current!.value ||
         !orgInput.current!.value ||
         !linkInput.current!.value
     )
@@ -29,12 +31,14 @@ function handleOnClick(
 
     const name: string = nameInput.current!.value,
         email: string = emailInput.current!.value,
+        password: string = passwordInput.current!.value,
         bio: string = bioInput.current!.value,
         org: string = orgInput.current!.value,
         link: string = linkInput.current!.value
     return {
         name: name,
         email: email,
+        password: password,
         bio: bio,
         organisation: org,
         socialMediaLink: link,
@@ -47,6 +51,7 @@ export default function AddHostPage() {
     const idInput = useRef<HTMLInputElement>(null)
     const nameInput = useRef<HTMLInputElement>(null)
     const emailInput = useRef<HTMLInputElement>(null)
+    const passwordInput = useRef<HTMLInputElement>(null)
     const bioInput = useRef<HTMLInputElement>(null)
     const orgInput = useRef<HTMLInputElement>(null)
     const linkInput = useRef<HTMLInputElement>(null)
@@ -62,6 +67,7 @@ export default function AddHostPage() {
                 idInput,
                 nameInput,
                 emailInput,
+                passwordInput,
                 bioInput,
                 orgInput,
                 linkInput,
@@ -86,12 +92,13 @@ export default function AddHostPage() {
                     className='main-page-container'
                     data-testid='main-page-container'
                 >
-                    <div className='main-title'>Add host</div>
+                    <div className='main-title'>Sign Up</div>
 
                     <HostForm
                         idInput={idInput}
                         nameInput={nameInput}
                         emailInput={emailInput}
+                        passwordInput={passwordInput}
                         bioInput={bioInput}
                         orgInput={orgInput}
                         linkInput={linkInput}

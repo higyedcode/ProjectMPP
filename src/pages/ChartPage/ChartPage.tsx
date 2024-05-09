@@ -7,11 +7,24 @@ import {
     getEventsByHostId,
 } from '../../services/EventService/EventService'
 import {Header} from '../../shared/components/header/Header'
+import {Layout} from '../../shared/components/layout/Layout'
 import './ChartPage.css'
 
 const ChartPage = () => {
     // Convert events data to a format suitable for the pie chart
     // let [currentEvents, setCurrentEvents] = useState<Event[]>([]);
+    if (localStorage.getItem('token') === null) {
+        return (
+            <Layout
+                entity='Events'
+                children={
+                    <div className='main-page-container'>
+                        <h1> Please log in to view events </h1>
+                    </div>
+                }
+            ></Layout>
+        )
+    }
     let [eventsMap, setEventsMap] = useState<Map<string, number>>(
         new Map<string, number>(),
     )

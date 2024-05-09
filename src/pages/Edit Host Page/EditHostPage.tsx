@@ -15,6 +15,7 @@ function handleOnClick(
     host: Host,
     nameInput: React.RefObject<HTMLInputElement>,
     emailInput: React.RefObject<HTMLInputElement>,
+    passwordInput: React.RefObject<HTMLInputElement>,
     bioInput: React.RefObject<HTMLInputElement>,
     orgInput: React.RefObject<HTMLInputElement>,
     linkInput: React.RefObject<HTMLInputElement>,
@@ -22,6 +23,7 @@ function handleOnClick(
     if (
         !nameInput.current ||
         !emailInput.current ||
+        !passwordInput.current ||
         !bioInput.current ||
         !orgInput.current ||
         !linkInput.current
@@ -31,6 +33,7 @@ function handleOnClick(
     if (
         !nameInput.current!.value ||
         !emailInput.current!.value ||
+        !passwordInput.current!.value ||
         !bioInput.current!.value ||
         !orgInput.current!.value ||
         !linkInput.current!.value
@@ -39,12 +42,14 @@ function handleOnClick(
 
     const name: string = nameInput.current!.value,
         email: string = emailInput.current!.value,
+        password: string = passwordInput.current!.value,
         bio: string = bioInput.current!.value,
         org: string = orgInput.current!.value,
         link: string = linkInput.current!.value
     return {
         name: name,
         email: email,
+        password: password,
         bio: bio,
         organisation: org,
         socialMediaLink: link,
@@ -57,6 +62,7 @@ export default function EditHostPage() {
     const idInput = useRef<HTMLInputElement>(null)
     const nameInput = useRef<HTMLInputElement>(null)
     const emailInput = useRef<HTMLInputElement>(null)
+    const passwordInput = useRef<HTMLInputElement>(null)
     const bioInput = useRef<HTMLInputElement>(null)
     const orgInput = useRef<HTMLInputElement>(null)
     const linkInput = useRef<HTMLInputElement>(null)
@@ -103,6 +109,7 @@ export default function EditHostPage() {
                 selectedHost!,
                 nameInput,
                 emailInput,
+                passwordInput,
                 bioInput,
                 orgInput,
                 linkInput,
@@ -138,6 +145,7 @@ export default function EditHostPage() {
                         idInput={idInput}
                         nameInput={nameInput}
                         emailInput={emailInput}
+                        passwordInput={passwordInput}
                         bioInput={bioInput}
                         orgInput={orgInput}
                         linkInput={linkInput}

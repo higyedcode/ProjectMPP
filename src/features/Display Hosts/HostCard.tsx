@@ -1,20 +1,24 @@
 import {useNavigate} from 'react-router-dom'
 
-import {useContext} from 'react'
+import {useContext, useEffect, useState} from 'react'
 import {EventContext} from '../../contexts/EventContext'
+import {getNrEventsByHostId} from '../../services/HostService/HostService'
 import {HostCardProps} from '../../types/HostCardProps.types'
 import './HostCard.css'
 
 export default function HostCard({givenHost, removeMethod}: HostCardProps) {
     const navigate = useNavigate()
     const eventContext = useContext(EventContext)!
+    const [nrEvents, setNrEvents] = useState<number>(0)
 
     const handleCardOnClick = () => {
-        // console.log("GIVEN host: " + givenEvent.toString())
-        eventContext.setHostId(givenHost.id)
-
-        navigate('/events')
+        // navigate('/events')
     }
+    useEffect(() => {
+        getNrEventsByHostId(givenHost.id).then((nrEvents) => {
+            setNrEvents(nrEvents)
+        })
+    }, [])
 
     const handleCardOnDoubleClick = () => {
         navigate('/editHost/' + givenHost.id)
@@ -47,6 +51,7 @@ export default function HostCard({givenHost, removeMethod}: HostCardProps) {
                     <div className='email'>{givenHost.email}</div>
                     <div className='bio'>{givenHost.bio}</div>
                     <div className='link'>{givenHost.link}</div>
+                    <div className='nrEvents'>{nrEvents}</div>
                 </div>
             </div>
         </div>

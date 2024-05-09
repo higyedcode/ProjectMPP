@@ -18,8 +18,13 @@ export async function getEvents() {
 
     return events
 }
-export async function getEventsByHostId(hostId: number) {
-    let response = await api.get('/events?hostId=' + hostId)
+export async function getEventsByHostId() {
+    let token = localStorage.getItem('token')
+
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+    let response = await api.get('/events', {headers: headers})
     let events: Event[] = []
 
     response.data.forEach((el: any) => {
@@ -35,8 +40,13 @@ export async function getEventsSize() {
 
     return size
 }
-export async function getEventsSizeByHostId(hostId: number) {
-    let response = await api.get('/events/eventsSize?hostId=' + hostId)
+export async function getEventsSizeByHostId() {
+    let token = localStorage.getItem('token')
+    console.log('TOKEN ' + localStorage.getItem('token'))
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+    let response = await api.get('/events/eventsSize', {headers: headers})
     let size: number = response.data
     console.log(size)
 
@@ -44,21 +54,23 @@ export async function getEventsSizeByHostId(hostId: number) {
 }
 
 export async function getEventsPage(
-    hostId: number,
     pageId: number,
     isAscending: boolean,
-    pageSize: number = 3,
+    pageSize: number = 5,
 ) {
     try {
+        let token = localStorage.getItem('token')
+        let headers = {
+            Authorization: `Bearer ${token}`,
+        }
         let response = await api.get(
-            '/events/getPage?hostId=' +
-                hostId +
-                '&page=' +
+            '/events/getPage?page=' +
                 pageId +
                 '&isAscending=' +
                 isAscending +
                 '&pageSize=' +
                 pageSize,
+            {headers: headers},
         )
         console.log(response.data)
         let events: Event[] = []
@@ -79,9 +91,17 @@ export async function updateEvent(id: number, event: EventJson) {
     })
 }
 export async function addEvent(event: EventJson) {
-    await api.post('/events/' + event.hostId, {
-        ...event,
-    })
+    let token = localStorage.getItem('token')
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+    await api.post(
+        '/events/',
+        {
+            ...event,
+        },
+        {headers: headers},
+    )
 }
 
 export async function deleteEvent(id: number) {
