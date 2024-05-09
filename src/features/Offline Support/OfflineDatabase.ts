@@ -108,7 +108,7 @@ export class OfflineDatabase {
                 const getRequest = store.get(key)
                 getRequest.onsuccess = (event) => {
                     const data: Host = getRequest.result
-                    newItem.id = data._id
+                    newItem.id = (data as any)._id
                     Object.assign(data, newItem)
                     const putRequest = store.put(data)
                     putRequest.onsuccess = () => {

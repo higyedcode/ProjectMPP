@@ -2,8 +2,7 @@ import '@testing-library/jest-dom'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {BrowserRouter} from 'react-router-dom'
 import {expect, test, vi} from 'vitest'
-import {EventContextProvider} from '../contexts/EventContext'
-import {AddEventPage} from '../pages/Add Event Page/AddEventPage'
+import AddEventPage from '../pages/Add Event Page/AddEventPage'
 
 const {mockedUseNavigate} = vi.hoisted(() => {
     return {
@@ -56,17 +55,17 @@ test('test add user page add button with form data', () => {
     window.alert = vi.fn()
 
     render(
-        <EventContextProvider
-            eventContext={{
-                events: [],
-                addEvent: vi.fn(),
-                removeEvent: vi.fn(),
-            }}
-        >
-            <BrowserRouter>
-                <AddEventPage />
-            </BrowserRouter>
-        </EventContextProvider>,
+        // <EventContextProvider
+        //     eventContext={{
+        //         events: [],
+        //         addEvent: vi.fn(),
+        //         removeEvent: vi.fn(),
+        //     }}
+        // >
+        <BrowserRouter>
+            <AddEventPage />
+        </BrowserRouter>,
+        // </EventContextProvider>,
     )
 
     const addUserButton = screen.getByTestId('button-test-id')

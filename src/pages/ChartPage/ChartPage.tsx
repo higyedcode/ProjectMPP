@@ -32,7 +32,7 @@ const ChartPage = () => {
     const eventsContext = useContext(EventContext)!
 
     useEffect(() => {
-        getEventsByHostId(eventsContext.hostId)
+        getEventsByHostId()
             .then((eventsList) => {
                 // setCurrentEvents(eventsList);
 

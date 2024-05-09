@@ -15,8 +15,11 @@ const Header = ({entity}) => {
                         <div>
                             <Link to='/events' className='link'>
                                 {
-                                    jwtDecode(localStorage.getItem('token')!)
-                                        .email
+                                    (
+                                        jwtDecode(
+                                            localStorage.getItem('token')!,
+                                        ) as any
+                                    ).email
                                 }
                             </Link>
                         </div>

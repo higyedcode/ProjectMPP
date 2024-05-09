@@ -44,8 +44,11 @@ export default function LoginPage() {
                 if (response === 'OK') {
                     navigate('/events')
                 } else {
-                    document.getElementsByClassName('error')[0].style.display =
-                        'block'
+                    ;(
+                        document.getElementsByClassName(
+                            'error',
+                        )[0] as HTMLElement
+                    ).style.display = 'block'
                 }
             })
             .catch((error) => {
