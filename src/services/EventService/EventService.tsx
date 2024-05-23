@@ -56,7 +56,7 @@ export async function getEventsSizeByHostId() {
 export async function getEventsPage(
     pageId: number,
     isAscending: boolean,
-    pageSize: number = 5,
+    pageSize: number = 15,
 ) {
     try {
         let token = localStorage.getItem('token')

@@ -82,7 +82,7 @@ export async function getNrEventsByHostId(hostId: number) {
 export async function getHostsPage(
     pageId: number,
     isAscending: boolean,
-    pageSize: number = 3,
+    pageSize: number = 15,
     offline: boolean,
     offlineDB: OfflineDatabase,
 ): Promise<Host[]> {

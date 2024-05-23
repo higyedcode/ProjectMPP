@@ -190,7 +190,7 @@ export default function DisplayEventPage() {
                                 />
                             ))}
                         </div>
-                        {/* {Math.min(currentPage * 15, nrEvents) != nrEvents && (
+                        {Math.min(currentPage * 15, nrEvents) != nrEvents && (
                             <button
                                 className='showMoreBtn'
                                 onClick={() => handleShowMore()}
@@ -202,7 +202,7 @@ export default function DisplayEventPage() {
                                 )}{' '}
                                 / {nrEvents}
                             </button>
-                        )} */}
+                        )}
                     </div>
                 }
             ></Layout>
