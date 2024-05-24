@@ -1,5 +1,6 @@
 import {useNavigate} from 'react-router-dom'
 
+import {jwtDecode} from 'jwt-decode'
 import {useContext, useEffect, useState} from 'react'
 import {EventContext} from '../../contexts/EventContext'
 import {getNrEventsByHostId} from '../../services/HostService/HostService'
@@ -10,8 +11,17 @@ export default function HostCard({givenHost, removeMethod}: HostCardProps) {
     const navigate = useNavigate()
     const eventContext = useContext(EventContext)!
     const [nrEvents, setNrEvents] = useState<number>(0)
+    const token = jwtDecode(localStorage.getItem('token')!) as any
 
     const handleCardOnClick = () => {
+        if (
+            token.role === 'ADMIN' ||
+            token.role === 'MANAGER' ||
+            givenHost.id === token.hostId
+        ) {
+            eventContext.setHostId(givenHost.id)
+            navigate('/events')
+        }
         // navigate('/events')
     }
     useEffect(() => {
@@ -21,14 +31,19 @@ export default function HostCard({givenHost, removeMethod}: HostCardProps) {
     }, [])
 
     const handleCardOnDoubleClick = () => {
-        navigate('/editHost/' + givenHost.id)
+        if (token.role === 'ADMIN' || token.role === 'MANAGER') {
+            navigate('/editHost/' + givenHost.id)
+        } else {
+            alert('You do not have permission to edit this host')
+        }
     }
     return (
         <div
             className='card'
             data-testid='host-card'
-            onClick={handleCardOnClick}
-            onContextMenu={handleCardOnDoubleClick}
+
+            //onContextMenu={handleCardOnDoubleClick}
+            //onDoubleClick={handleCardOnDoubleClick}
         >
             <button
                 className='remove-button'
@@ -41,7 +56,11 @@ export default function HostCard({givenHost, removeMethod}: HostCardProps) {
                 X
             </button>
 
-            <div className='card-info' data-testid='card-info'>
+            <div
+                className='card-info'
+                data-testid='card-info'
+                onClick={handleCardOnClick}
+            >
                 <div className='host-info'>
                     <div className='host-id' hidden>
                         {givenHost.id}
@@ -54,6 +73,12 @@ export default function HostCard({givenHost, removeMethod}: HostCardProps) {
                     <div className='nrEvents'>{nrEvents}</div>
                 </div>
             </div>
+            <button
+                className='editBtn'
+                onClick={() => handleCardOnDoubleClick()}
+            >
+                Edit
+            </button>
         </div>
     )
 }

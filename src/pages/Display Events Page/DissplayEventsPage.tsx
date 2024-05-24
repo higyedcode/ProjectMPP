@@ -4,6 +4,7 @@ import {EventCard} from '../../features/Display Events/EventCard'
 import {Event} from '../../models/Event'
 import {Layout} from '../../shared/components/layout/Layout'
 
+import {jwtDecode} from 'jwt-decode'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import {EventContext} from '../../contexts/EventContext'
 import {PaginationContext} from '../../contexts/PaginationContext'
@@ -43,6 +44,10 @@ export default function DisplayEventPage() {
                 }
             ></Layout>
         )
+    }
+    const role = (jwtDecode(localStorage.getItem('token')!) as any).role
+    if (role === 'ADMIN' || role === 'MANAGER') {
+        localStorage.setItem('hostId', eventsContext.hostId.toString())
     }
     // let [scrollPosition, setScrollPosition] = useState<number>(0);
 

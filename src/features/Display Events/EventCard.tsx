@@ -1,15 +1,20 @@
 import {useNavigate} from 'react-router-dom'
 import {EventCardProps} from '../../types/EventCardProps.types'
 
+import {jwtDecode} from 'jwt-decode'
 import './EventCard.css'
-import { sha256 } from 'js-sha256'
 
 export function EventCard({givenEvent, removeMethod}: EventCardProps) {
     const navigate = useNavigate()
+    const token = jwtDecode(localStorage.getItem('token')!) as any
 
     const handleCardOnClick = () => {
         // console.log("GIVEN EVENT: " + givenEvent.toString())
-        navigate('/editEvent/' + givenEvent.eventId)
+        if (token.role === 'ADMIN' || token.role === 'MANAGER') {
+            navigate('/editEvent/' + givenEvent.eventId)
+        } else {
+            alert('You do not have permission to edit this event')
+        }
     }
 
     return (
@@ -31,14 +36,14 @@ export function EventCard({givenEvent, removeMethod}: EventCardProps) {
 
             <div className='card-info' data-testid='card-info'>
                 <div className='event-info'>
-                    <div className='event-id' hidden>{givenEvent.eventId}</div>
+                    <div className='event-id' hidden>
+                        {givenEvent.eventId}
+                    </div>
                     <div className='name'>{givenEvent.eventName}</div>
                     <div className='date'>
                         {givenEvent.eventDate.toDateString()}
                     </div>
-                    <div className='location'>
-                        {givenEvent.eventLocation}
-                    </div>
+                    <div className='location'>{givenEvent.eventLocation}</div>
                 </div>
             </div>
         </div>

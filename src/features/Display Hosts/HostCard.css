@@ -1,7 +1,7 @@
 .card {
     width: 220px;
     height: 254px;
-    padding: 10px;
+    padding: 20px;
     margin: 10px;
 
     border-radius: 0.5em;
@@ -93,6 +93,14 @@
     color: black;
     background: white;
     border-radius: 1em;
+}
+.editBtn {
+    background: white;
+    border: none;
+    border-radius: 10px;
+    width: 100%;
+    color: black;
+    cursor: pointer;
 }
 
 /* #E8D1C8BD -> good to use for smaller text */

@@ -3,6 +3,20 @@ import {Link} from 'react-router-dom'
 import './Header.css'
 
 const Header = ({entity}) => {
+    let token = {
+        hostId: 0,
+        email: 'No user logged in',
+        role: '',
+    }
+    if (localStorage.getItem('token') !== null) {
+        console.log(localStorage.getItem('token'))
+        token = jwtDecode(localStorage.getItem('token')!) as any
+    }
+    function logout() {
+        console.log('Logout requested')
+        localStorage.clear()
+    }
+
     return (
         <div className='header' data-testid='header-test-id'>
             <nav className='navbar'>
@@ -14,20 +28,18 @@ const Header = ({entity}) => {
                     {localStorage.getItem('token') && (
                         <div>
                             <Link to='/events' className='link'>
-                                {
-                                    (
-                                        jwtDecode(
-                                            localStorage.getItem('token')!,
-                                        ) as any
-                                    ).email
-                                }
+                                {token.email + '  ' + token.role}
                             </Link>
                         </div>
                     )}
 
                     {localStorage.getItem('token') && (
                         <div>
-                            <Link to='/?logout=1' className='link'>
+                            <Link
+                                to='/login'
+                                className='link'
+                                onClick={() => logout()}
+                            >
                                 Logout
                             </Link>
                         </div>
@@ -49,14 +61,17 @@ const Header = ({entity}) => {
                         </Link>
                     </div>
 
-                    <div>
-                        <Link
-                            to={'/add' + entity.slice(0, -1)}
-                            className='link'
-                        >
-                            {entity == 'Events' ? 'Add Event' : 'Register'}
-                        </Link>
-                    </div>
+                    {(token.role == 'ADMIN' || token.role == 'MANAGER') && (
+                        <div>
+                            <Link
+                                to={'/add' + entity.slice(0, -1)}
+                                className='link'
+                            >
+                                {entity == 'Events' ? 'Add Event' : 'Register'}
+                            </Link>
+                        </div>
+                    )}
+
                     {entity == 'Events' && (
                         <div>
                             <Link to='/chart' className='link'>
