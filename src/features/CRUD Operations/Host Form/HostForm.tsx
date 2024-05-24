@@ -1,3 +1,4 @@
+import {jwtDecode} from 'jwt-decode'
 import {Host} from '../../../models/Host'
 import {HostFormType} from '../../../types/HostFormProps.types'
 import {FormEntry} from '../Form Entry/FormEntry'
@@ -19,21 +20,32 @@ function setFormEntriesForHost(
         // console.log("NOT UNDEFINED")
         // console.log("SETTIING IT: " + event!.eventDate.getFullYear() )
         formEntries[0].disabled = true
-        formEntries[0].defaultValue = host!.id.toString()
-        formEntries[1].defaultValue = host!.name
-        // formEntries[2].defaultValue = event!.eventDate
-        //     .toISOString()
-        //     .split('T')[0]
-        formEntries[2].defaultValue = host!.email
-        formEntries[3].defaultValue = host!.bio
-        formEntries[4].defaultValue = host!.org
-        formEntries[5].defaultValue = host!.link
+        if (
+            (jwtDecode(localStorage.getItem('token')!) as any).role === 'ADMIN'
+        ) {
+            formEntries[0].disabled = false
+        }
+        formEntries[0].defaultValue = host!.role
+        formEntries[1].disabled = true
+        formEntries[1].defaultValue = host!.id.toString()
+        formEntries[2].defaultValue = host!.name
+        formEntries[3].defaultValue = host!.email
+        formEntries[4].defaultValue = host!.bio
+        formEntries[5].defaultValue = host!.org
+        formEntries[6].defaultValue = host!.link
     }
     return formEntries
 }
 
 function createFormEntries(props: HostFormType) {
     let formEntries = [
+        {
+            label: 'ROLE',
+            ref: props.roleInput,
+            placeHolder: 'Role',
+            defaultValue: '',
+            disabled: false,
+        },
         {
             label: 'ID',
             ref: props.idInput,
@@ -55,13 +67,7 @@ function createFormEntries(props: HostFormType) {
             defaultValue: '',
             disabled: false,
         },
-        {
-            label: 'Password',
-            ref: props.passwordInput,
-            placeHolder: 'Password',
-            defaultValue: '',
-            disabled: false,
-        },
+
         {
             label: 'Bio',
             ref: props.bioInput,

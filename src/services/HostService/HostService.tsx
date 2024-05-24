@@ -14,7 +14,11 @@ export async function getHostById(
 
         return allHosts!.find((host) => host.id == parseInt(id))
     }
-    let response = await api.get('/hosts/' + id)
+    let token = localStorage.getItem('token')
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+    let response = await api.get('/hosts/' + id, {headers: headers})
     // console.log("RESPONSE DATA __ " + response.data)
     return Host.fromJson(response.data)
 }
@@ -40,7 +44,11 @@ export async function getHostsSize(
     if (offline) {
         return (await offlineDB.getAllHostDBItems()).length
     }
-    let response = await api.get('/hosts/hostsSize')
+    let token = localStorage.getItem('token')
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+    let response = await api.get('/hosts/hostsSize', {headers: headers})
     let size: number = response.data
     console.log('SIZE + ' + size)
 
@@ -58,7 +66,6 @@ export function addOfflineEVents(offlineDB: OfflineDatabase) {
                     id: host.id,
                     name: host.name,
                     email: host.email,
-                    password: host.password,
                     bio: host.bio,
                     organisation: host.organisation,
                     socialMediaLink: host.socialMediaLink,
@@ -72,7 +79,13 @@ export function addOfflineEVents(offlineDB: OfflineDatabase) {
 }
 
 export async function getNrEventsByHostId(hostId: number) {
-    let response = await api.get('/hosts/nrEvents?hostId=' + hostId)
+    let token = localStorage.getItem('token')
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+    let response = await api.get('/hosts/nrEvents?hostId=' + hostId, {
+        headers: headers,
+    })
     let size: number = response.data
     console.log('SIZE + ' + size)
 
@@ -103,6 +116,10 @@ export async function getHostsPage(
 
     try {
         addOfflineEVents(offlineDB)
+        let token = localStorage.getItem('token')
+        let headers = {
+            Authorization: `Bearer ${token}`,
+        }
         let response = await api.get(
             '/hosts/getPage?page=' +
                 pageId +
@@ -110,6 +127,7 @@ export async function getHostsPage(
                 isAscending +
                 '&pageSize=' +
                 pageSize,
+            {headers: headers},
         )
 
         let hosts: Host[] = []
@@ -161,9 +179,17 @@ export async function updatehost(
                 console.log('UPDATED HOST OFFLINE!')
             })
     }
-    await api.patch('/hosts/' + id, {
-        ...host,
-    })
+    let token = localStorage.getItem('token')
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+    await api.patch(
+        '/hosts/' + id,
+        {
+            ...host,
+        },
+        {headers: headers},
+    )
 }
 export async function addhost(
     host: HostJson,

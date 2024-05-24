@@ -1,15 +1,40 @@
+import {jwtDecode} from 'jwt-decode'
 import api from '../../api'
 import {Event} from '../../models/Event.js'
 import {EventJson} from '../../types/eventJson.types.js'
 
+export function ifAdminOrManagerGetHostId() {
+    let token = (jwtDecode(localStorage.getItem('token')) as any).role
+    if (token === 'ADMIN' || token === 'MANAGER') {
+        return parseInt(localStorage.getItem('hostId'))
+    }
+    return null
+}
+
 export async function getEventById(id: number) {
-    let response = await api.get('/events/' + id)
+    let token = localStorage.getItem('token')
+    console.log('TOKEN ' + localStorage.getItem('token'))
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+
+    let response = await api.get('/events/' + id, {headers: headers})
     // console.log("RESPONSE DATA __ " + response.data)
     return Event.fromJson(response.data)
 }
 
 export async function getEvents() {
-    let response = await api.get('/events')
+    let hostId = ifAdminOrManagerGetHostId()
+    let apiPath = '/events'
+    if (hostId != null) {
+        apiPath += '?hostId=' + hostId
+    }
+    let token = localStorage.getItem('token')
+    console.log('TOKEN ' + localStorage.getItem('token'))
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+    let response = await api.get(apiPath, {headers: headers})
     let events: Event[] = []
 
     response.data.forEach((el: any) => {
@@ -24,7 +49,12 @@ export async function getEventsByHostId() {
     let headers = {
         Authorization: `Bearer ${token}`,
     }
-    let response = await api.get('/events', {headers: headers})
+    let hostId = ifAdminOrManagerGetHostId()
+    let apiPath = '/events'
+    if (hostId != null) {
+        apiPath += '?hostId=' + hostId
+    }
+    let response = await api.get(apiPath, {headers: headers})
     let events: Event[] = []
 
     response.data.forEach((el: any) => {
@@ -34,7 +64,18 @@ export async function getEventsByHostId() {
     return events
 }
 export async function getEventsSize() {
-    let response = await api.get('/events/eventsSize')
+    let hostId = ifAdminOrManagerGetHostId()
+    let apiPath = '/events/eventsSize'
+    if (hostId != null) {
+        apiPath += '?hostId=' + hostId
+    }
+    let token = localStorage.getItem('token')
+    console.log('TOKEN ' + localStorage.getItem('token'))
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+
+    let response = await api.get(apiPath, {headers: headers})
     let size: number = response.data
     console.log(size)
 
@@ -46,7 +87,12 @@ export async function getEventsSizeByHostId() {
     let headers = {
         Authorization: `Bearer ${token}`,
     }
-    let response = await api.get('/events/eventsSize', {headers: headers})
+    let hostId = ifAdminOrManagerGetHostId()
+    let apiPath = '/events/eventsSize'
+    if (hostId != null) {
+        apiPath += '?hostId=' + hostId
+    }
+    let response = await api.get(apiPath, {headers: headers})
     let size: number = response.data
     console.log(size)
 
@@ -63,15 +109,18 @@ export async function getEventsPage(
         let headers = {
             Authorization: `Bearer ${token}`,
         }
-        let response = await api.get(
+        let hostId = ifAdminOrManagerGetHostId()
+        let apiPath =
             '/events/getPage?page=' +
-                pageId +
-                '&isAscending=' +
-                isAscending +
-                '&pageSize=' +
-                pageSize,
-            {headers: headers},
-        )
+            pageId +
+            '&isAscending=' +
+            isAscending +
+            '&pageSize=' +
+            pageSize
+        if (hostId != null) {
+            apiPath += '&hostId=' + hostId
+        }
+        let response = await api.get(apiPath, {headers: headers})
         console.log(response.data)
         let events: Event[] = []
 
@@ -86,17 +135,33 @@ export async function getEventsPage(
 }
 
 export async function updateEvent(id: number, event: EventJson) {
-    await api.patch('/events/' + id, {
-        ...event,
-    })
+    let token = localStorage.getItem('token')
+    console.log('TOKEN ' + localStorage.getItem('token'))
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+    await api.patch(
+        '/events/' + id,
+        {
+            ...event,
+        },
+        {headers: headers},
+    )
 }
 export async function addEvent(event: EventJson) {
+    let hostId = ifAdminOrManagerGetHostId()
+    let apiPath = '/events'
+    if (hostId != null) {
+        apiPath += '?hostId=' + hostId
+    }
+
     let token = localStorage.getItem('token')
     let headers = {
         Authorization: `Bearer ${token}`,
     }
+
     await api.post(
-        '/events/',
+        apiPath,
         {
             ...event,
         },
@@ -105,7 +170,11 @@ export async function addEvent(event: EventJson) {
 }
 
 export async function deleteEvent(id: number) {
-    await api.delete('/events/' + id)
+    let token = localStorage.getItem('token')
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+    await api.delete('/events/' + id, {headers: headers})
 }
 
 export async function checkServerStatus() {

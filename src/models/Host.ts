@@ -5,6 +5,7 @@ export class Host {
     private _bio: string
     private _org: string
     private _link: string
+    private _role: string
 
     constructor(
         id: number,
@@ -13,6 +14,7 @@ export class Host {
         bio: string,
         org: string,
         link: string,
+        _role: string,
     ) {
         this._id = id
         this._name = name
@@ -20,9 +22,13 @@ export class Host {
         this._bio = bio
         this._org = org
         this._link = link
+        this._role = _role
     }
 
     // Getters
+    public get role(): string {
+        return this._role
+    }
     public get id(): number {
         return this._id
     }
@@ -48,6 +54,9 @@ export class Host {
     }
 
     // Setters
+    public set role(value: string) {
+        this._role = value
+    }
     public set id(value: number) {
         this._id = value
     }
@@ -74,7 +83,7 @@ export class Host {
 
     // toString method
     public toString(): string {
-        return `Host { id: ${this._id}, name: ${this._name}, email: ${this._email}, bio: ${this._bio}, org: ${this._org}, link: ${this._link} }`
+        return `Host { id: ${this._id}, name: ${this._name}, email: ${this._email}, bio: ${this._bio}, org: ${this._org}, link: ${this._link} , role: ${this._role} } `
     }
     public static fromJson(json: any): Host {
         return new Host(
@@ -84,6 +93,7 @@ export class Host {
             json.bio,
             json.organisation,
             json.socialMediaLink,
+            json.role,
         )
     }
 }

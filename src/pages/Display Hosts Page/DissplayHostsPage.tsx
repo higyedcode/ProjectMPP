@@ -3,6 +3,7 @@ import {useContext, useEffect, useState} from 'react'
 import {Layout} from '../../shared/components/layout/Layout'
 
 import InfiniteScroll from 'react-infinite-scroll-component'
+import {useNavigate} from 'react-router-dom'
 import {HostContext} from '../../contexts/HostsContext'
 import {HostPaginationContext} from '../../contexts/HostsPaginationContext'
 import {OfflineContext} from '../../contexts/OfflineContext'
@@ -39,6 +40,19 @@ export default function DisplayHostPage() {
     let [isServerOnline, setIsServerOnline] = useState<boolean>(
         offlineContext.isServerOnline,
     )
+
+    if (localStorage.getItem('token') === null) {
+        return (
+            <Layout
+                entity='Events'
+                children={
+                    <div className='main-page-container'>
+                        <h1> Please log in to view events </h1>
+                    </div>
+                }
+            ></Layout>
+        )
+    }
 
     // useEffect(() => {
     //     events.sort((firstEvent, secondEvent) => {
@@ -195,6 +209,7 @@ export default function DisplayHostPage() {
             // Perform logout logic here
             console.log('Logout requested')
             localStorage.clear()
+            useNavigate()('/login')
         }
     }, []) // Empty dependency array ensures the effect runs only once
 

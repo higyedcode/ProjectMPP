@@ -42,7 +42,7 @@ export default function LoginPage() {
             .then((response) => {
                 console.log(response)
                 if (response === 'OK') {
-                    navigate('/events')
+                    navigate('/')
                 } else {
                     ;(
                         document.getElementsByClassName(

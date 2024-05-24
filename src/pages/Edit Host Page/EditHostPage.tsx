@@ -13,17 +13,17 @@ import './EditHostPage.css'
 
 function handleOnClick(
     host: Host,
+    roleInput: React.RefObject<HTMLInputElement>,
     nameInput: React.RefObject<HTMLInputElement>,
     emailInput: React.RefObject<HTMLInputElement>,
-    passwordInput: React.RefObject<HTMLInputElement>,
     bioInput: React.RefObject<HTMLInputElement>,
     orgInput: React.RefObject<HTMLInputElement>,
     linkInput: React.RefObject<HTMLInputElement>,
 ) {
     if (
+        !roleInput.current ||
         !nameInput.current ||
         !emailInput.current ||
-        !passwordInput.current ||
         !bioInput.current ||
         !orgInput.current ||
         !linkInput.current
@@ -31,25 +31,25 @@ function handleOnClick(
         throw new Error('Input references are null!')
 
     if (
+        !roleInput.current ||
         !nameInput.current!.value ||
         !emailInput.current!.value ||
-        !passwordInput.current!.value ||
         !bioInput.current!.value ||
         !orgInput.current!.value ||
         !linkInput.current!.value
     )
         throw new Error('Empty fields detected!')
 
-    const name: string = nameInput.current!.value,
+    const role: string = roleInput.current!.value,
+        name: string = nameInput.current!.value,
         email: string = emailInput.current!.value,
-        password: string = passwordInput.current!.value,
         bio: string = bioInput.current!.value,
         org: string = orgInput.current!.value,
         link: string = linkInput.current!.value
     return {
+        role: role,
         name: name,
         email: email,
-        password: password,
         bio: bio,
         organisation: org,
         socialMediaLink: link,
@@ -59,10 +59,10 @@ function handleOnClick(
 export default function EditHostPage() {
     document.title = 'Edit Host'
 
+    const roleInput = useRef<HTMLInputElement>(null)
     const idInput = useRef<HTMLInputElement>(null)
     const nameInput = useRef<HTMLInputElement>(null)
     const emailInput = useRef<HTMLInputElement>(null)
-    const passwordInput = useRef<HTMLInputElement>(null)
     const bioInput = useRef<HTMLInputElement>(null)
     const orgInput = useRef<HTMLInputElement>(null)
     const linkInput = useRef<HTMLInputElement>(null)
@@ -77,7 +77,7 @@ export default function EditHostPage() {
     const {id} = useParams()
     console.log(id)
     let [selectedHost, setSelectedHost] = useState<Host>(
-        new Host(0, '', '', '', '', ''),
+        new Host(0, '', '', '', '', '', ''),
     )
     let [isLoading, setIsLoading] = useState<boolean>(true)
 
@@ -90,6 +90,7 @@ export default function EditHostPage() {
             .then((foundHost) => {
                 console.log('FOUND: ' + foundHost!.toString())
                 setSelectedHost(foundHost!)
+                console.log(foundHost)
                 setIsLoading(false)
             })
             .catch((err) => {
@@ -107,9 +108,9 @@ export default function EditHostPage() {
         try {
             const newHost = handleOnClick(
                 selectedHost!,
+                roleInput,
                 nameInput,
                 emailInput,
-                passwordInput,
                 bioInput,
                 orgInput,
                 linkInput,
@@ -142,10 +143,10 @@ export default function EditHostPage() {
                     data-testid='main-page-container'
                 >
                     <HostForm
+                        roleInput={roleInput}
                         idInput={idInput}
                         nameInput={nameInput}
                         emailInput={emailInput}
-                        passwordInput={passwordInput}
                         bioInput={bioInput}
                         orgInput={orgInput}
                         linkInput={linkInput}
