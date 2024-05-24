@@ -14,7 +14,7 @@ export class Host {
         bio: string,
         org: string,
         link: string,
-        _role: string,
+        role: string,
     ) {
         this._id = id
         this._name = name
@@ -22,7 +22,7 @@ export class Host {
         this._bio = bio
         this._org = org
         this._link = link
-        this._role = _role
+        this._role = role
     }
 
     // Getters

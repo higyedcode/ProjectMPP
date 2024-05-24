@@ -11,7 +11,7 @@ import {HostJson} from '../../types/hostJson.types'
 import './AddHostPage.css'
 
 function handleOnClick(
-    idInput: React.RefObject<HTMLInputElement>,
+    roleInput: React.RefObject<HTMLInputElement>,
     nameInput: React.RefObject<HTMLInputElement>,
     emailInput: React.RefObject<HTMLInputElement>,
     passwordInput: React.RefObject<HTMLInputElement>,
@@ -25,29 +25,31 @@ function handleOnClick(
         !bioInput.current!.value ||
         !passwordInput.current!.value ||
         !orgInput.current!.value ||
-        !linkInput.current!.value
+        !linkInput.current!.value ||
+        !roleInput.current!.value
     )
         throw new Error('Empty fields detected!')
 
     const name: string = nameInput.current!.value,
         email: string = emailInput.current!.value,
-        password: string = passwordInput.current!.value,
+        role: string = passwordInput.current!.value,
         bio: string = bioInput.current!.value,
         org: string = orgInput.current!.value,
         link: string = linkInput.current!.value
     return {
         name: name,
         email: email,
-        password: password,
         bio: bio,
         organisation: org,
         socialMediaLink: link,
+        role: role,
     }
 }
 
 export default function AddHostPage() {
     document.title = 'Add Host'
 
+    const roleInput = useRef<HTMLInputElement>(null)
     const idInput = useRef<HTMLInputElement>(null)
     const nameInput = useRef<HTMLInputElement>(null)
     const emailInput = useRef<HTMLInputElement>(null)
@@ -98,10 +100,10 @@ export default function AddHostPage() {
                         idInput={idInput}
                         nameInput={nameInput}
                         emailInput={emailInput}
-                        passwordInput={passwordInput}
                         bioInput={bioInput}
                         orgInput={orgInput}
                         linkInput={linkInput}
+                        roleInput={roleInput}
                         data-testid='event-form'
                     />
 

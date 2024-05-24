@@ -73,6 +73,7 @@ export class OfflineDatabase {
                     host.bio,
                     host.org,
                     host.link,
+                    host.role,
                 )
                 const request = store.add(newItem)
 
@@ -104,6 +105,7 @@ export class OfflineDatabase {
                     host.bio,
                     host.org,
                     host.link,
+                    host.role,
                 )
                 const getRequest = store.get(key)
                 getRequest.onsuccess = (event) => {
@@ -170,7 +172,6 @@ export class OfflineDatabase {
                             id: eventClass._id,
                             name: eventClass._name,
                             email: eventClass._email,
-                            password: eventClass._password,
                             bio: eventClass._bio,
                             organisation: eventClass._org,
                             socialMediaLink: eventClass._link,

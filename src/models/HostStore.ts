@@ -11,8 +11,9 @@ export class HostStore extends Host {
         org: string,
         link: string,
         action: string,
+        role: string,
     ) {
-        super(id, name, email, bio, org, link)
+        super(id, name, email, bio, org, link, role)
         this._action = action
     }
 
