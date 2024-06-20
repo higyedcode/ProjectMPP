@@ -51,7 +51,7 @@
 }
 
 .name {
-    padding: 2.5em 0em;
+    padding: 1em 0em 2em 0em;
     font-size: large;
 }
 .org,
@@ -74,13 +74,16 @@
     margin-bottom: 1em;
 }
 
-.remove-button {
-    align-self: flex-end;
+.remove-button,
+.invite-button {
+    /* align-self: flex-start; */
     padding: 0;
-    margin: 0;
-
+    margin-left: 230px;
+    margin-top: 10px;
+    top: 40px;
     background: none;
     border: 0px;
+    width: 30px;
     font-weight: bold;
     font-size: 12pt;
     color: #566573;
@@ -88,11 +91,20 @@
     transition: all 0.3s ease;
 }
 
-.remove-button:hover {
+.remove-button:hover,
+.invite-button:hover {
     cursor: pointer;
     color: black;
     background: white;
     border-radius: 1em;
+}
+.invite-button {
+    /* background: red; */
+    color: #2196f3;
+    position: absolute;
+    margin: 0;
+    top: 0;
+    font-size: 30px;
 }
 .editBtn {
     background: white;
@@ -104,3 +116,8 @@
 }
 
 /* #E8D1C8BD -> good to use for smaller text */
+.awsContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}

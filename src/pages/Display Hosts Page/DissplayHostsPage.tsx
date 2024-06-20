@@ -13,6 +13,7 @@ import {
     deletehost,
     getHostsPage,
     getHostsSize,
+    getNrEventsByHostId,
 } from '../../services/HostService/HostService'
 import './DisplayHostsPage.css'
 
@@ -46,7 +47,10 @@ export default function DisplayHostPage() {
             <Layout
                 entity='Events'
                 children={
-                    <div className='main-page-container'>
+                    <div
+                        className='main-page-container'
+                        style={{width: '100%'}}
+                    >
                         <h1> Please log in to view events </h1>
                     </div>
                 }
@@ -64,7 +68,15 @@ export default function DisplayHostPage() {
     // }, [isAscending])
 
     // let events: Event[] = eventsContext.events
-    const removeMethod = (id: number) => {
+    const removeMethod = async (id: number) => {
+        if ((await getNrEventsByHostId(id)) > 0) {
+            alert('You can only delete hosts that have no events left!')
+            return
+        }
+
+        if (!window.confirm('Are you sure you want to delete this host?'))
+            return
+
         deletehost(id!, !isOnline, allHosts, offlineDB).then(() => {
             console.log('DELETE ' + id)
             getHostsPage(
@@ -244,7 +256,13 @@ export default function DisplayHostPage() {
             <Layout
                 entity='Hosts'
                 children={
-                    <div className='main-page-container'>
+                    <div
+                        className='main-page-container'
+                        style={{width: '100%'}}
+                    >
+                        <h1 style={{margin: '30px 0 10px 0'}}>
+                            Hosts Dashboard
+                        </h1>
                         <button
                             className='sort'
                             onClick={() =>

@@ -206,9 +206,23 @@ export async function addhost(
     }
     console.log('ADDING HOST -> ')
     console.log(host)
-    await api.post('/hosts', {
-        ...host,
-    })
+
+    let token = localStorage.getItem('token')
+    let apiEndpoint = '/hosts'
+    if (token === null) {
+        apiEndpoint = '/hosts/register'
+    }
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+
+    await api.post(
+        apiEndpoint,
+        {
+            ...host,
+        },
+        {headers: headers},
+    )
 }
 
 export async function deletehost(
@@ -221,7 +235,11 @@ export async function deletehost(
         return
     }
 
-    await api.delete('/hosts/' + id)
+    let token = localStorage.getItem('token')
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+    await api.delete('/hosts/' + id, {headers: headers})
 }
 export async function checkServerStatus() {
     console.log('Checking server status ...')

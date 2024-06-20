@@ -12,6 +12,7 @@
 .main-title {
     font-size: 20pt;
     font-weight: bold;
+    text-align: center;
 }
 .error {
     color: white;
@@ -20,4 +21,50 @@
     padding: 15px;
     margin: 30px 0 0 0;
     background: red;
+    border-radius: 10px;
+    font-size: large;
+    position: absolute;
+    top: 15%;
+}
+.form-button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.register-button {
+    /* background: white;
+    color: #2196f3;
+    border: 2px solid #2196f3; */
+    margin-left: 20px;
+}
+.aws-btn {
+    --button-raise-level: 10px;
+    --button-hover-pressure: 5;
+}
+
+.welcomePanel {
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 400px;
+    height: 400px;
+    border-radius: 20px 0 0 20px;
+}
+
+.loginContainer {
+    background: #54b9e8;
+    padding: 47px;
+    display: flex;
+    border-radius: 0 20px 20px 0;
+    flex-direction: column;
+    /* align-items: center; */
+    justify-content: center;
+}
+
+.loginContainer input {
+    width: 300px;
+}
+.loginContainer label {
 }

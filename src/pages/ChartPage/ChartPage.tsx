@@ -6,6 +6,7 @@ import {
     getEvents,
     getEventsByHostId,
 } from '../../services/EventService/EventService'
+import {Footer} from '../../shared/components/footer/Footer'
 import {Header} from '../../shared/components/header/Header'
 import {Layout} from '../../shared/components/layout/Layout'
 import './ChartPage.css'
@@ -18,7 +19,10 @@ const ChartPage = () => {
             <Layout
                 entity='Events'
                 children={
-                    <div className='main-page-container'>
+                    <div
+                        className='main-page-container'
+                        style={{width: '100%'}}
+                    >
                         <h1> Please log in to view events </h1>
                     </div>
                 }
@@ -148,9 +152,13 @@ const ChartPage = () => {
     return (
         <div>
             <Header entity='Events' />
-            <div className='pie-chart-container'>
+            <div
+                className='main-page-container'
+                style={{width: '100%', height: '85vh'}}
+            >
                 {eventsMap.size > 0 && (
                     <BarChart
+                        colors={['#2196f3']}
                         xAxis={[
                             {
                                 id: 'barCategories',
@@ -163,11 +171,12 @@ const ChartPage = () => {
                                 data: [...eventsMap!.values()],
                             },
                         ]}
-                        width={500}
-                        height={300}
+                        width={700}
+                        height={500}
                     />
                 )}
             </div>
+            <Footer />
         </div>
     )
 }

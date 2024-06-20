@@ -4,3 +4,12 @@
     justify-content: center;
     align-items: center;
 }
+
+.aws-btn--large {
+    --button-raise-level: 10px;
+    --button-hover-pressure: 5;
+    width: 220px;
+    height: 254px;
+    /* --button-large-width: 220px;
+    --button-large-height: 254px; */
+}

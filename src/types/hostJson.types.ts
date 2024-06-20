@@ -3,7 +3,7 @@ export type HostJson = {
     role?: string
     name: string
     email: string
-    //password: string
+    password?: string
     bio: string
     organisation: string
     socialMediaLink: string

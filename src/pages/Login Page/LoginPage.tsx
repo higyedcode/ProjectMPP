@@ -1,11 +1,12 @@
 import {useContext, useRef} from 'react'
+import {AwesomeButton} from 'react-awesome-button'
+import 'react-awesome-button/dist/styles.css'
 import {useNavigate} from 'react-router-dom'
 import {EventContext} from '../../contexts/EventContext'
 import {HostContext} from '../../contexts/HostsContext'
 import {OfflineContext} from '../../contexts/OfflineContext'
 import {LoginForm} from '../../features/CRUD Operations/Login Form/LoginForm'
 import {getHostByEmailAndPassword} from '../../services/HostService/HostService'
-import {Button} from '../../shared/components/button/button'
 import {Layout} from '../../shared/components/layout/Layout'
 import './LoginPage.css'
 
@@ -49,6 +50,11 @@ export default function LoginPage() {
                             'error',
                         )[0] as HTMLElement
                     ).style.display = 'block'
+                    // ;(
+                    //     document.getElementsByClassName(
+                    //         'main-title',
+                    //     )[0] as HTMLElement
+                    // ).style.display = 'none'
                 }
             })
             .catch((error) => {
@@ -56,6 +62,9 @@ export default function LoginPage() {
                 console.log(error)
                 navigate('/events')
             })
+    }
+    const goToRegister = () => {
+        navigate('/addHost')
     }
 
     return (
@@ -65,23 +74,60 @@ export default function LoginPage() {
                 <div
                     className='main-page-container'
                     data-testid='main-page-container'
+                    style={{
+                        width: '100%',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                    }}
                 >
-                    <div className='main-title'>Login</div>
+                    <div
+                        className='welcomePanel'
+                        style={{
+                            backgroundImage:
+                                "url('https://toplanahead.onrender.com/src/shared/components/header/planAhead.jpeg')",
+                        }}
+                    ></div>
                     <div className='error'>
                         ☒ Invalid username or password ☒
                     </div>
+                    <div className='loginContainer'>
+                        <div className='main-title'>Login</div>
 
-                    <LoginForm
-                        emailInput={emailInput}
-                        passwordInput={passwordInput}
-                    />
+                        <LoginForm
+                            emailInput={emailInput}
+                            passwordInput={passwordInput}
+                        />
 
-                    <Button
-                        type='submit'
-                        buttonMessage='Login'
-                        className='form-button'
-                        onclick={handleOnClickWrapper}
-                    />
+                        <div className='form-button-container'>
+                            {/* <Button
+                                type='submit'
+                                buttonMessage='Login'
+                                className='form-button'
+                                onclick={handleOnClickWrapper}
+                            />
+                            <Button
+                                type='button'
+                                buttonMessage='Register'
+                                className='register-button'
+                                onclick={goToRegister}
+                            /> */}
+                            <AwesomeButton
+                                type='primary'
+                                className='form-button'
+                                onPress={handleOnClickWrapper}
+                            >
+                                Login
+                            </AwesomeButton>
+                            <AwesomeButton
+                                type='secondary'
+                                size='medium'
+                                className='register-button'
+                                onPress={goToRegister}
+                            >
+                                Register
+                            </AwesomeButton>
+                        </div>
+                    </div>
                 </div>
             }
         ></Layout>

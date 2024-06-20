@@ -1,3 +1,4 @@
+import {MyChatBot} from '../chatbot/MyChatBot'
 import './Footer.css'
 
 export function Footer() {
@@ -8,6 +9,7 @@ export function Footer() {
                 <br />
                 Higyed Erik
             </div>
+            <MyChatBot />
         </div>
     )
 }

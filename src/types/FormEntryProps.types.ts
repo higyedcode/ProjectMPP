@@ -3,4 +3,5 @@ export type FormEntryProps = {
     placeholder: string
     disabled: boolean
     defaultValue: string
+    hidden?: boolean
 }

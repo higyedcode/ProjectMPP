@@ -170,6 +170,7 @@ export class OfflineDatabase {
                         const {id, ...eventClass} = item // Destructure the object, excluding the id field
                         const hostJson: HostJson = {
                             id: eventClass._id,
+                            role: eventClass._role,
                             name: eventClass._name,
                             email: eventClass._email,
                             bio: eventClass._bio,

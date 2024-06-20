@@ -1,6 +1,7 @@
 .main-page-container {
     height: 100%;
-    width: 100vw;
+    /* width: 100vw; */
+    width: 50%;
     flex: 1;
 
     display: flex;
@@ -8,6 +9,23 @@
     align-items: center;
     justify-content: space-evenly;
     background-color: #6cc2ea;
+    /* display: none; */
+}
+.map {
+    width: 50%;
+    background: #6cc2ea;
+    position: sticky;
+    top: 0;
+    /* height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center; */
+}
+.flexRowContainer {
+    display: flex;
+    flex-direction: row;
+    background: #6cc2ea;
+    flex-grow: 1;
 }
 .loading {
     display: flex;
@@ -99,4 +117,27 @@
     font-size: 2em;
     border-radius: 10px;
     text-decoration: underline;
+}
+
+.closeMap-button {
+    position: fixed;
+    top: 9%;
+    right: 25%;
+    z-index: 1000;
+    width: 30px;
+    height: 20px;
+    background: none;
+    border: 0px;
+    font-weight: bold;
+    font-size: 12pt;
+    color: #566573;
+
+    transition: all 0.3s ease;
+}
+
+.closeMap-button:hover {
+    cursor: pointer;
+    color: black;
+    background: white;
+    /* border-radius: 1em; */
 }

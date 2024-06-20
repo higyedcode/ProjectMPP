@@ -7,12 +7,14 @@ import {Layout} from '../../shared/components/layout/Layout'
 import {jwtDecode} from 'jwt-decode'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import {EventContext} from '../../contexts/EventContext'
+import {OfflineContext} from '../../contexts/OfflineContext'
 import {PaginationContext} from '../../contexts/PaginationContext'
 import {
     deleteEvent,
     getEventsPage,
     getEventsSizeByHostId,
 } from '../../services/EventService/EventService'
+import MapMarker from '../Map Page/MapMarker'
 import './DisplayEventsPage.css'
 
 export default function DisplayEventPage() {
@@ -20,7 +22,11 @@ export default function DisplayEventPage() {
 
     const paginationContext = useContext(PaginationContext)!
     const eventsContext = useContext(EventContext)!
+    const offlineContext = useContext(OfflineContext)!
     const hostId = eventsContext.hostId
+    const [selectedLocation, setSelectedLocation] = useState<string | null>(
+        'Oradea, Oradea, Romania',
+    )
 
     let [isAscending, setIsAscending] = useState<String>(
         paginationContext.isAscending ? 'ASC' : 'DESC',
@@ -38,13 +44,19 @@ export default function DisplayEventPage() {
             <Layout
                 entity='Events'
                 children={
-                    <div className='main-page-container'>
+                    <div
+                        className='main-page-container'
+                        style={{width: '100%'}}
+                    >
                         <h1> Please log in to view events </h1>
                     </div>
                 }
             ></Layout>
         )
     }
+    if (offlineContext.invitedHost !== null) {
+    }
+
     const role = (jwtDecode(localStorage.getItem('token')!) as any).role
     if (role === 'ADMIN' || role === 'MANAGER') {
         localStorage.setItem('hostId', eventsContext.hostId.toString())
@@ -160,6 +172,25 @@ export default function DisplayEventPage() {
     // console.log(currentEvents)
     ////////////////////////////
 
+    const viewMap = (eventLocation) => {
+        if (document.querySelector('.map')!.hasAttribute('hidden')) {
+            document.querySelector('.map')!.removeAttribute('hidden')
+            document
+                .querySelector('.closeMap-button')!
+                .removeAttribute('hidden')
+        }
+
+        setSelectedLocation(eventLocation)
+        console.log(eventLocation)
+    }
+
+    function closeMap(): void {
+        document.querySelector('.map')!.setAttribute('hidden', 'true')
+        document
+            .querySelector('.closeMap-button')!
+            .setAttribute('hidden', 'true')
+    }
+
     return (
         <InfiniteScroll
             dataLength={currentPage * 15}
@@ -174,40 +205,73 @@ export default function DisplayEventPage() {
             <Layout
                 entity='Events'
                 children={
-                    <div className='main-page-container'>
-                        <button
-                            className='sort'
-                            onClick={() =>
-                                setIsAscending(
-                                    isAscending === 'ASC' ? 'DESC' : 'ASC',
-                                )
-                            }
+                    <div className='flexRowContainer'>
+                        <div
+                            className='main-page-container'
+                            style={{width: '100vw', height: '100%'}}
                         >
-                            {isAscending}
-                        </button>
-
-                        <div className='events-list' data-testid='events-list'>
-                            {currentEvents.map((event, index) => (
-                                <EventCard
-                                    givenEvent={event}
-                                    removeMethod={removeMethod}
-                                    key={index}
-                                />
-                            ))}
-                        </div>
-                        {Math.min(currentPage * 15, nrEvents) != nrEvents && (
+                            <h1 style={{margin: '30px 0 10px 0'}}>
+                                Events Dashboard
+                            </h1>
+                            {offlineContext.invitedHost !== null && (
+                                <h3>
+                                    Choose the event to be specified in the
+                                    invitation for{' '}
+                                    {offlineContext.invitedHost.name}
+                                </h3>
+                            )}
                             <button
-                                className='showMoreBtn'
-                                onClick={() => handleShowMore()}
+                                className='sort'
+                                onClick={() =>
+                                    setIsAscending(
+                                        isAscending === 'ASC' ? 'DESC' : 'ASC',
+                                    )
+                                }
                             >
-                                {' '}
-                                View More {Math.min(
-                                    currentPage * 15,
-                                    nrEvents,
-                                )}{' '}
-                                / {nrEvents}
+                                {isAscending}
                             </button>
-                        )}
+
+                            <div
+                                className='events-list'
+                                data-testid='events-list'
+                            >
+                                {currentEvents.map((event, index) => (
+                                    <EventCard
+                                        givenEvent={event}
+                                        removeMethod={removeMethod}
+                                        key={index}
+                                        viewMap={viewMap}
+                                    />
+                                ))}
+                            </div>
+                            {Math.min(currentPage * 15, nrEvents) !=
+                                nrEvents && (
+                                <button
+                                    className='showMoreBtn'
+                                    onClick={() => handleShowMore()}
+                                >
+                                    {' '}
+                                    View More{' '}
+                                    {Math.min(
+                                        currentPage * 15,
+                                        nrEvents,
+                                    )} / {nrEvents}
+                                </button>
+                            )}
+                        </div>
+                        <button
+                            className='closeMap-button'
+                            data-testid='closeMap-button'
+                            onClick={() => {
+                                closeMap()
+                            }}
+                            hidden
+                        >
+                            X
+                        </button>
+                        <div className='map' hidden>
+                            <MapMarker selectedLocation={selectedLocation} />
+                        </div>
                     </div>
                 }
             ></Layout>

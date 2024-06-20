@@ -51,7 +51,7 @@
 }
 
 .name {
-    padding: 2.5em 0em;
+    padding: 1em 0 2.5em 0em;
     font-size: large;
 }
 .date,
@@ -69,11 +69,23 @@
     margin-bottom: 1em;
 }
 
-.remove-button {
-    align-self: flex-end;
-    padding: 0;
-    margin: 0;
+.mapBtn {
+    background: white;
+    border: none;
+    border-radius: 10px;
+    padding: 5px;
+    margin-top: 5px;
+    width: 100%;
+    color: black;
+    cursor: pointer;
+}
 
+.remove-button {
+    padding: 0;
+    width: 30px;
+    height: 20px;
+    margin-left: 230px;
+    top: 40px;
     background: none;
     border: 0px;
     font-weight: bold;
@@ -91,3 +103,8 @@
 }
 
 /* #E8D1C8BD -> good to use for smaller text */
+.awsContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}

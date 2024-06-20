@@ -1,4 +1,5 @@
 import {useContext, useEffect, useRef, useState} from 'react'
+import {AwesomeButton} from 'react-awesome-button'
 import {useNavigate, useParams} from 'react-router-dom'
 import {EventContext} from '../../contexts/EventContext'
 import {HostContext} from '../../contexts/HostsContext'
@@ -6,7 +7,6 @@ import {OfflineContext} from '../../contexts/OfflineContext'
 import {HostForm} from '../../features/CRUD Operations/Host Form/HostForm'
 import {Host} from '../../models/Host'
 import {getHostById, updatehost} from '../../services/HostService/HostService'
-import {Button} from '../../shared/components/button/button'
 import {Layout} from '../../shared/components/layout/Layout'
 import LoadingPage from '../Loading Page/LoadingPage'
 import './EditHostPage.css'
@@ -16,6 +16,7 @@ function handleOnClick(
     roleInput: React.RefObject<HTMLInputElement>,
     nameInput: React.RefObject<HTMLInputElement>,
     emailInput: React.RefObject<HTMLInputElement>,
+    passwordInput: React.RefObject<HTMLInputElement>,
     bioInput: React.RefObject<HTMLInputElement>,
     orgInput: React.RefObject<HTMLInputElement>,
     linkInput: React.RefObject<HTMLInputElement>,
@@ -63,6 +64,7 @@ export default function EditHostPage() {
     const idInput = useRef<HTMLInputElement>(null)
     const nameInput = useRef<HTMLInputElement>(null)
     const emailInput = useRef<HTMLInputElement>(null)
+    const passwordInput = useRef<HTMLInputElement>(null)
     const bioInput = useRef<HTMLInputElement>(null)
     const orgInput = useRef<HTMLInputElement>(null)
     const linkInput = useRef<HTMLInputElement>(null)
@@ -111,6 +113,7 @@ export default function EditHostPage() {
                 roleInput,
                 nameInput,
                 emailInput,
+                passwordInput,
                 bioInput,
                 orgInput,
                 linkInput,
@@ -141,24 +144,34 @@ export default function EditHostPage() {
                 <div
                     className='main-page-container'
                     data-testid='main-page-container'
+                    style={{width: '100%'}}
                 >
                     <HostForm
                         roleInput={roleInput}
                         idInput={idInput}
                         nameInput={nameInput}
                         emailInput={emailInput}
+                        passwordInput={passwordInput}
                         bioInput={bioInput}
                         orgInput={orgInput}
                         linkInput={linkInput}
                         host={selectedHost}
                         data-testid='event-form'
+                        passwordHidden={true}
                     />
 
-                    <Button
+                    {/* <Button
                         type='submit'
                         buttonMessage='Edit host'
                         onclick={handleOnClickWrapper}
-                    />
+                    /> */}
+                    <AwesomeButton
+                        type='primary'
+                        className='form-button'
+                        onPress={handleOnClickWrapper}
+                    >
+                        Edit Host
+                    </AwesomeButton>
                 </div>
             }
         ></Layout>

@@ -1,3 +1,4 @@
+import axios from 'axios'
 import {jwtDecode} from 'jwt-decode'
 import api from '../../api'
 import {Event} from '../../models/Event.js'
@@ -18,7 +19,8 @@ export async function getEventById(id: number) {
         Authorization: `Bearer ${token}`,
     }
 
-    let response = await api.get('/events/' + id, {headers: headers})
+    // let response = await api.get('/events/' + id, {headers: headers})
+    let response = await api.get('/events/' + id)
     // console.log("RESPONSE DATA __ " + response.data)
     return Event.fromJson(response.data)
 }
@@ -185,4 +187,58 @@ export async function checkServerStatus() {
     } catch (error) {
         return false
     }
+}
+
+function sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+export async function getEventLocationCoordinates(eventLocation: string) {
+    try {
+        let location = eventLocation.split(',').slice(1).join(',')
+        console.log('LOCATION ' + location)
+        let response = await axios.get(
+            `https://nominatim.openstreetmap.org/search?q=${location}&format=json`,
+        )
+        console.log('RESPONSE')
+        console.log(response)
+        //setTimeout(() => {}, 1000)
+        if (response.status === 200) {
+            const latitude = parseFloat(response.data[0].lat)
+            const longitude = parseFloat(response.data[0].lon)
+            return {lat: latitude, lng: longitude, name: eventLocation}
+            // return {lat: latitude, lon: longitude}
+        } else {
+            console.error('Geocoding API error:', response.data.status)
+        }
+    } catch (error) {
+        console.error((error as Error).message)
+    }
+}
+
+export async function sendInvite(event: EventJson, hostId: number) {
+    let token = localStorage.getItem('token')
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+    await api.post(
+        '/events/sendInvite/' + hostId,
+        {
+            ...event,
+        },
+        {headers: headers},
+    )
+}
+export async function sendTicket(event: EventJson, hostId: number) {
+    let token = localStorage.getItem('token')
+    let headers = {
+        Authorization: `Bearer ${token}`,
+    }
+    await api.post(
+        '/events/sendTicket/' + hostId,
+        {
+            ...event,
+        },
+        {headers: headers},
+    )
 }

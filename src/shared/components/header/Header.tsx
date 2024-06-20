@@ -1,8 +1,18 @@
 import {jwtDecode} from 'jwt-decode'
+import {useContext, useEffect} from 'react'
+import {Switch, useDarkreader} from 'react-darkreader'
 import {Link} from 'react-router-dom'
+import {OfflineContext} from '../../../contexts/OfflineContext'
 import './Header.css'
 
 const Header = ({entity}) => {
+    const offlineContext = useContext(OfflineContext)!
+    const [isDark, {toggle}] = useDarkreader(offlineContext.isDark)
+    useEffect(() => {
+        console.log('DARK changed!')
+        offlineContext.setIsDark(isDark)
+    }, [isDark])
+
     let token = {
         hostId: 0,
         email: 'No user logged in',
@@ -25,6 +35,7 @@ const Header = ({entity}) => {
                 </Link>
 
                 <div className='links'>
+                    <Switch checked={isDark} onChange={toggle} />
                     {localStorage.getItem('token') && (
                         <div>
                             <Link to='/events' className='link'>
@@ -79,6 +90,11 @@ const Header = ({entity}) => {
                             </Link>
                         </div>
                     )}
+                    <div>
+                        <Link to='/calendar' className='link'>
+                            Calendar View
+                        </Link>
+                    </div>
                 </div>
             </nav>
         </div>

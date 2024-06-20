@@ -10,39 +10,41 @@ import './FormEntry.css'
 // }
 
 const FormEntry = forwardRef<HTMLInputElement, FormEntryProps>((props, ref) => {
-//    console.log("DEFAULT" + props.defaultValue)
-    
+    //    console.log("DEFAULT" + props.defaultValue)
+    if (props.hidden) return <div></div>
+
     return (
         <div className='form-entry' data-testid='form-entry'>
             <label htmlFor={props.label} className='form-label'>
                 {props.label}
             </label>
-            {
-            props.defaultValue === '' ? (
+            {props.defaultValue === '' ? (
                 <input
                     data-testid='form-entry-input'
                     // type={props.label === 'Date' ? 'date':'text'}
-                    type='text'
+                    type={props.label === 'Password' ? 'password' : 'text'}
                     className='form-input'
                     id={props.label}
                     placeholder={props.placeholder}
                     disabled={props.disabled}
                     ref={ref}
-                    onFocus={(e) => (props.label === 'Date'? e.target.type='date' : e.target.type = 'text')}
-                    
+                    onFocus={(e) =>
+                        props.label === 'Date' ? (e.target.type = 'date') : ''
+                    }
                 />
             ) : (
                 <input
                     data-testid='form-entry-input'
                     // type={props.label === 'Date' ? 'date':'text'}
-                    type = 'text'
+                    type={props.label === 'Password' ? 'password' : 'text'}
                     className='form-input'
                     defaultValue={props.defaultValue}
                     placeholder={props.defaultValue}
                     disabled={props.disabled}
                     ref={ref}
-                    onFocus={(e) => (props.label === 'Date'? e.target.type='date' : e.target.type = 'text')}
-                
+                    onFocus={(e) =>
+                        props.label === 'Date' ? (e.target.type = 'date') : ''
+                    }
                 />
             )}
         </div>

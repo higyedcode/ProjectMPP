@@ -13,6 +13,8 @@ import {PaginationContextProvider} from './contexts/PaginationContext'
 import {OfflineDatabase} from './features/Offline Support/OfflineDatabase'
 import {Host} from './models/Host'
 import AddHostPage from './pages/Add Host Page/AddHostPage'
+import CalendarApp from './pages/Calendar Page/CalendarPage'
+import CheckoutPage from './pages/Checkout Ticket Page/Checkout'
 import DisplayHostPage from './pages/Display Hosts Page/DissplayHostsPage'
 import EditHostPage from './pages/Edit Host Page/EditHostPage'
 import LoadingPage from './pages/Loading Page/LoadingPage'
@@ -176,10 +178,14 @@ function App() {
     let [isOnline, setIsOnline] = useState<boolean>(navigator.onLine)
     let [isServerOnline, setIsServerOnline] = useState<boolean>(true)
 
+    let [isDark, setIsDark] = useState<boolean>(false)
+    let [invitedHost, setInvitedHost] = useState<Host | null>(null)
+
     useEffect(() => {
         // getEvents()
         //     .then((eventsList) => {
-        //         setEvents(eventsList)
+        //         //setEvents(eventsList)
+        //         setAllCoordinates(eventsList)
         //     })
         //     .catch((error) => {
         //         console.error('Error fetching events:', error)
@@ -249,9 +255,13 @@ function App() {
             offlineContext={{
                 offlineDB,
                 isOnline,
+                isDark,
+                invitedHost,
                 setIsOnline,
                 isServerOnline,
                 setIsServerOnline,
+                setIsDark,
+                setInvitedHost,
             }}
         >
             <HostsContextProvider
@@ -396,6 +406,26 @@ function App() {
                                                 fallback={<LoadingPage />}
                                             >
                                                 <LoginPage />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path='/calendar'
+                                        element={
+                                            <Suspense
+                                                fallback={<LoadingPage />}
+                                            >
+                                                <CalendarApp />
+                                            </Suspense>
+                                        }
+                                    />
+                                    <Route
+                                        path='/checkout'
+                                        element={
+                                            <Suspense
+                                                fallback={<LoadingPage />}
+                                            >
+                                                <CheckoutPage />
                                             </Suspense>
                                         }
                                     />

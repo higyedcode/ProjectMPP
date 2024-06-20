@@ -1,11 +1,11 @@
 import {useContext, useRef} from 'react'
+import {AwesomeButton} from 'react-awesome-button'
 import {useNavigate} from 'react-router-dom'
 import {EventContext} from '../../contexts/EventContext'
 import {HostContext} from '../../contexts/HostsContext'
 import {OfflineContext} from '../../contexts/OfflineContext'
 import {EventForm} from '../../features/CRUD Operations/Event Form/EventForm'
 import {addEvent} from '../../services/EventService/EventService'
-import {Button} from '../../shared/components/button/button'
 import {Layout} from '../../shared/components/layout/Layout'
 import {EventJson} from '../../types/eventJson.types'
 import './AddEventPage.css'
@@ -87,6 +87,7 @@ export default function AddEventPage() {
                 <div
                     className='main-page-container'
                     data-testid='main-page-container'
+                    style={{width: '100%'}}
                 >
                     <div className='main-title'>Add event</div>
 
@@ -98,12 +99,19 @@ export default function AddEventPage() {
                         data-testid='event-form'
                     />
 
-                    <Button
+                    {/* <Button
                         type='submit'
                         buttonMessage='Add event'
                         className='form-button'
                         onclick={handleOnClickWrapper}
-                    />
+                    /> */}
+                    <AwesomeButton
+                        type='primary'
+                        className='form-button'
+                        onPress={handleOnClickWrapper}
+                    >
+                        Add Event
+                    </AwesomeButton>
                 </div>
             }
         ></Layout>

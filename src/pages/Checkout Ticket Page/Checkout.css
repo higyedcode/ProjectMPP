@@ -1,0 +1,100 @@
+.main-page-container {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+}
+
+#PaymentForm {
+    flex-grow: 1;
+}
+.main-title {
+    font-size: 20pt;
+    font-weight: bold;
+}
+.error {
+    color: white;
+    font-size: 15pt;
+    display: none;
+    padding: 15px;
+    margin: 30px 0 0 0;
+    background: red;
+    border-radius: 10px;
+    font-size: large;
+}
+.form-button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.register-button {
+    /* background: white;
+    color: #2196f3;
+    border: 2px solid #2196f3; */
+    margin-left: 20px;
+}
+.aws-btn {
+    --button-raise-level: 10px;
+    --button-hover-pressure: 5;
+}
+h1 {
+    margin-bottom: 2em;
+}
+
+#PaymentForm {
+    width: 100%;
+    height: 85vh;
+    background: #6cc2ea;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.form {
+    /* margin-top: -15px; */
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+/* .small {
+    padding: 15px;
+    margin: 15px 20px;
+    width: 130%;
+    border: 0;
+    border-radius: 5px;
+
+    background-color: #f7f7f7;
+} */
+.wideInput {
+    padding: 15px;
+    margin: 15px 20px;
+    width: 130%;
+    border: 0;
+    border-radius: 5px;
+
+    background-color: #f7f7f7;
+}
+
+.horizontal {
+    width: 60%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    /* background: red; */
+}
+.rccs {
+    margin: 0;
+    width: 26vw;
+}
+.rccs__card {
+    height: 300px;
+    width: min(26vw, 480px);
+}

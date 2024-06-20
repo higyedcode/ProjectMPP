@@ -1,4 +1,5 @@
 import {useContext, useEffect, useRef, useState} from 'react'
+import {AwesomeButton} from 'react-awesome-button'
 import {useNavigate, useParams} from 'react-router-dom'
 import {EventContext} from '../../contexts/EventContext'
 import {EventForm} from '../../features/CRUD Operations/Event Form/EventForm'
@@ -7,7 +8,6 @@ import {
     getEventById,
     updateEvent,
 } from '../../services/EventService/EventService'
-import {Button} from '../../shared/components/button/button'
 import {Layout} from '../../shared/components/layout/Layout'
 import LoadingPage from '../Loading Page/LoadingPage'
 import './EditEventPage.css'
@@ -112,6 +112,7 @@ export default function EditEventPage() {
                 <div
                     className='main-page-container'
                     data-testid='main-page-container'
+                    style={{width: '100%'}}
                 >
                     <EventForm
                         idInput={idInput}
@@ -122,11 +123,18 @@ export default function EditEventPage() {
                         data-testid='event-form'
                     />
 
-                    <Button
+                    {/* <Button
                         type='submit'
                         buttonMessage='Edit event'
                         onclick={handleOnClickWrapper}
-                    />
+                    /> */}
+                    <AwesomeButton
+                        type='primary'
+                        className='form-button'
+                        onPress={handleOnClickWrapper}
+                    >
+                        Edit Event
+                    </AwesomeButton>
                 </div>
             }
         ></Layout>
